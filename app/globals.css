@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #131313;
+  --color-paper: #f3f3f3;
+  --color-yellow: #f8c93d;
+  --color-orange: #f48115;
+  --color-magenta: #ed2b5d;
+  --color-purple: #a01789;
+  --color-blue: #281c64;
+}
+
+@theme inline {
+  --font-display: var(--font-display-raw);
+  --font-body: var(--font-body-raw);
+}
+
+.headline span {
+  position: relative;
+  display: inline-block;
+}
+
+@media (hover: hover) {
+  .headline span:hover {
+    animation: glitch 420ms steps(2, jump-none) infinite;
+  }
+}
+
+.headline span::before,
+.headline span::after {
+  content: attr(data-text);
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+}
+
+@media (hover: hover) {
+  .headline span:hover::before {
+    opacity: 0.85;
+    color: var(--color-magenta);
+    animation: glitch-shift-1 420ms steps(2, jump-none) infinite;
+  }
+  .headline span:hover::after {
+    opacity: 0.85;
+    color: var(--color-blue);
+    animation: glitch-shift-2 420ms steps(2, jump-none) infinite;
+  }
+}
+
+@keyframes glitch {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-1px, 1px);
+  }
+}
+@keyframes glitch-shift-1 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(3px, -2px);
+  }
+}
+@keyframes glitch-shift-2 {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(-3px, 2px);
+  }
+}
+
+.marquee-track {
+  animation: marquee 28s linear infinite;
+}
+
+.marquee:hover .marquee-track {
+  animation-play-state: paused;
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .marquee-track,
+  .headline span,
+  .headline span::before,
+  .headline span::after {
+    animation: none !important;
+  }
+}
