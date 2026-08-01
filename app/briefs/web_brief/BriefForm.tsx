@@ -40,7 +40,9 @@ const TEXT_ACCENT: Record<Accent, string> = {
 export default function BriefForm() {
   const [stepIndex, setStepIndex] = useState(0);
   const [data, setData] = useState<BriefFormData>(emptyFormData());
-  const [status, setStatus] = useState<"idle" | "submitting" | "done" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "done" | "error"
+  >("idle");
   const [error, setError] = useState<string | null>(null);
 
   const isReview = stepIndex === STEPS.length;
@@ -53,7 +55,9 @@ export default function BriefForm() {
 
   function toggleCheckbox(id: string, option: string) {
     const current = (data[id] as string[]) ?? [];
-    const next = current.includes(option) ? current.filter((o) => o !== option) : [...current, option];
+    const next = current.includes(option)
+      ? current.filter((o) => o !== option)
+      : [...current, option];
     setField(id, next);
   }
 
@@ -90,7 +94,11 @@ export default function BriefForm() {
   return (
     <div className="mx-auto flex min-h-dvh max-w-2xl flex-col px-6 py-10 md:py-14">
       <header className="mb-10 flex items-center justify-between">
-        <img src="/logo.svg" alt="Takariwa Studio" className="h-6 w-auto md:h-7" />
+        <img
+          src="/logo.svg"
+          alt="Takariwa Studio"
+          className="h-13 w-auto md:h-15"
+        />
         <span className="font-body text-[0.65rem] tracking-[0.2em] text-paper/50 uppercase">
           Brief de proyecto web
         </span>
@@ -111,7 +119,9 @@ export default function BriefForm() {
       {!isReview ? (
         <section key={step.id} className="flex-1">
           <div className="mb-8 flex items-start gap-3">
-            <span className={`font-body pt-1 text-sm font-semibold ${TEXT_ACCENT[accent]}`}>
+            <span
+              className={`font-body pt-1 text-sm font-semibold ${TEXT_ACCENT[accent]}`}
+            >
               {step.number}
             </span>
             <div>
@@ -119,7 +129,9 @@ export default function BriefForm() {
                 {step.title}
               </h1>
               {step.description && (
-                <p className="mt-2 font-body text-sm text-paper/60">{step.description}</p>
+                <p className="mt-2 font-body text-sm text-paper/60">
+                  {step.description}
+                </p>
               )}
             </div>
           </div>
@@ -127,9 +139,17 @@ export default function BriefForm() {
           <div className="flex flex-col gap-7">
             {step.fields.map((f) => (
               <div key={f.id}>
-                <label htmlFor={f.id} className="mb-2 block font-body text-sm font-semibold text-paper">
+                <label
+                  htmlFor={f.id}
+                  className="mb-2 block font-body text-sm font-semibold text-paper"
+                >
                   {f.label}
-                  {f.hint && <span className="font-normal text-paper/50 italic"> — {f.hint}</span>}
+                  {f.hint && (
+                    <span className="font-normal text-paper/50 italic">
+                      {" "}
+                      — {f.hint}
+                    </span>
+                  )}
                 </label>
 
                 {f.type === "textarea" && (
@@ -142,7 +162,10 @@ export default function BriefForm() {
                   />
                 )}
 
-                {(f.type === "text" || f.type === "email" || f.type === "tel" || f.type === "date") && (
+                {(f.type === "text" ||
+                  f.type === "email" ||
+                  f.type === "tel" ||
+                  f.type === "date") && (
                   <input
                     id={f.id}
                     type={f.type}
@@ -155,7 +178,9 @@ export default function BriefForm() {
                 {f.type === "checkbox-group" && (
                   <div className="flex flex-wrap gap-2">
                     {f.options?.map((opt) => {
-                      const checked = ((data[f.id] as string[]) ?? []).includes(opt);
+                      const checked = ((data[f.id] as string[]) ?? []).includes(
+                        opt,
+                      );
                       return (
                         <button
                           type="button"
@@ -201,7 +226,9 @@ export default function BriefForm() {
       ) : (
         <section className="flex-1">
           <div className="mb-8 flex items-start gap-3">
-            <span className="font-body pt-1 text-sm font-semibold text-blue">✓</span>
+            <span className="font-body pt-1 text-sm font-semibold text-blue">
+              ✓
+            </span>
             <div>
               <h1 className="font-display text-3xl leading-none tracking-wide text-paper md:text-4xl">
                 Revisión final
@@ -224,10 +251,16 @@ export default function BriefForm() {
               if (rows.length === 0) return null;
               return (
                 <div key={s.id} className="border-b border-paper/10 pb-5">
-                  <h2 className="font-display mb-2 text-lg tracking-wide text-yellow">{s.title}</h2>
+                  <h2 className="font-display mb-2 text-lg tracking-wide text-yellow">
+                    {s.title}
+                  </h2>
                   {rows.map((r) => (
-                    <p key={r.label} className="font-body text-sm leading-relaxed text-paper/85">
-                      <strong className="text-paper">{r.label}:</strong> {r.display}
+                    <p
+                      key={r.label}
+                      className="font-body text-sm leading-relaxed text-paper/85"
+                    >
+                      <strong className="text-paper">{r.label}:</strong>{" "}
+                      {r.display}
                     </p>
                   ))}
                 </div>
