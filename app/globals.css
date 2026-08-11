@@ -21,9 +21,9 @@
 }
 
 @media (hover: hover) {
-  .headline span:hover {
+  /* .headline span:hover {
     animation: glitch 420ms steps(2, jump-none) infinite;
-  }
+  } */
 }
 
 .headline span::before,
@@ -35,7 +35,7 @@
 }
 
 @media (hover: hover) {
-  .headline span:hover::before {
+  /* .headline span:hover::before {
     opacity: 0.85;
     color: var(--color-magenta);
     animation: glitch-shift-1 420ms steps(2, jump-none) infinite;
@@ -44,7 +44,7 @@
     opacity: 0.85;
     color: var(--color-blue);
     animation: glitch-shift-2 420ms steps(2, jump-none) infinite;
-  }
+  } */
 }
 
 @keyframes glitch {
