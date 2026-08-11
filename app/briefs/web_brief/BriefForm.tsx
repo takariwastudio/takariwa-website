@@ -327,23 +327,9 @@ export default function BriefForm() {
         if (e.key === "Escape") goBack();
       }}
     >
-      <header className="flex shrink-0 items-center justify-between px-6 py-5 md:px-10 md:py-6">
-        <img
-          src="/logo.svg"
-          alt="Takariwa Studio"
-          className="h-10 w-auto md:h-15"
-        />
-        <Link
-          href="/"
-          className="rounded-full border border-paper/15 px-4 py-2 font-body text-xs font-semibold text-paper transition-transform hover:-translate-y-0.5"
-        >
-          Volver al inicio
-        </Link>
-      </header>
-
       <main className="flex flex-1 items-center justify-center px-6 py-6">
         <div className="w-full max-w-2xl">
-          {!isIntro && (
+          {/* {!isIntro && (
             <div className="mb-10 flex items-center gap-2">
               {Array.from({ length: total + 1 }).map((_, i) => (
                 <span
@@ -361,7 +347,7 @@ export default function BriefForm() {
                 />
               ))}
             </div>
-          )}
+          )} */}
 
           <div className="relative">
             <AnimatePresence mode="wait" custom={direction}>
@@ -656,26 +642,6 @@ export default function BriefForm() {
           )}
         </div>
       </main>
-
-      <footer className="flex shrink-0 flex-col items-center gap-3 border-t border-paper/10 px-6 py-5 sm:flex-row sm:justify-between">
-        <span className="font-body text-xs text-paper/40">
-          © {new Date().getFullYear()} Takariwa Studio | Disturbio Creativo
-        </span>
-        <nav className="flex items-center gap-4" aria-label="Redes sociales">
-          {SOCIAL_LINKS.map(({ label, href, Icon }) => (
-            <a
-              key={label}
-              href={href}
-              target={href.startsWith("http") ? "_blank" : undefined}
-              rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
-              aria-label={label}
-              className="text-paper/40 transition-colors hover:text-yellow [&_svg]:h-[1.05rem] [&_svg]:w-[1.05rem]"
-            >
-              <Icon />
-            </a>
-          ))}
-        </nav>
-      </footer>
     </div>
   );
 }
