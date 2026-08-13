@@ -428,7 +428,7 @@ export default function BriefForm({
                   {intro.paragraphs.map((p, i) => (
                     <p
                       key={i}
-                      className={`max-w-lg font-body text-[0.95rem] leading-relaxed text-paper/75 md:text-base ${i === 0 ? "mt-5" : "mt-3"}`}
+                      className={`max-w-xl font-body text-[0.95rem] leading-relaxed text-paper/75 md:text-base ${i === 0 ? "mt-5" : "mt-3"}`}
                     >
                       {p}
                     </p>
