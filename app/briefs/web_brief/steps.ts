@@ -1,32 +1,6 @@
-// Fuente única de verdad del Brief de Proyecto Web.
-// Agregar/quitar/reordenar un campo se hace solo aquí — el formulario público
-// y la vista de administración leen de este mismo archivo.
+import type { StepDef, IntroConfig, DoneConfig } from "../_shared/types";
 
-export type FieldType =
-  | "text"
-  | "email"
-  | "tel"
-  | "date"
-  | "textarea"
-  | "checkbox-group"
-  | "radio-group";
-
-export interface FieldDef {
-  id: string;
-  label: string;
-  type: FieldType;
-  hint?: string;
-  options?: string[];
-  required?: boolean;
-}
-
-export interface StepDef {
-  id: string;
-  number: string;
-  title: string;
-  description?: string;
-  fields: FieldDef[];
-}
+export const BRIEF_TYPE = "web" as const;
 
 export const STEPS: StepDef[] = [
   {
@@ -54,12 +28,7 @@ export const STEPS: StepDef[] = [
         type: "email",
         required: true,
       },
-      {
-        id: "telefono",
-        label: "Teléfono / WhatsApp",
-        type: "tel",
-        required: true,
-      },
+      { id: "telefono", label: "Teléfono / WhatsApp", type: "tel" },
       {
         id: "sitio_actual",
         label: "Sitio web actual (si aplica)",
@@ -319,10 +288,18 @@ export const STEPS: StepDef[] = [
   },
 ];
 
-export type BriefFormData = Record<string, string | string[]>;
+export const INTRO: IntroConfig = {
+  eyebrow: "Antes de tocar un solo píxel",
+  headline: "No es un formulario. Es la excavación.",
+  paragraphs: [
+    "Antes de proponer, escuchamos. Antes de escuchar, preguntamos lo que nadie pregunta, así arranca nuestro proceso, y este brief es exactamente eso.",
+    `Son ${STEPS.flatMap((s) => s.fields).length} preguntas, una a la vez. Nada de bloques eternos ni casillas para rellenar por rellenar. Lo que no tengas claro todavía, lo saltas.`,
+  ],
+  ctaLabel: "Empezar →",
+};
 
-export const emptyFormData = (): BriefFormData =>
-  STEPS.flatMap((s) => s.fields).reduce((acc, f) => {
-    acc[f.id] = f.type === "checkbox-group" ? [] : "";
-    return acc;
-  }, {} as BriefFormData);
+export const DONE: DoneConfig = {
+  eyebrow: "Brief recibido",
+  headline: "Listo.",
+  body: "Ya está en la mesa. El equipo lo revisa y te escribe a {{email}} con los próximos pasos, sin rodeos.",
+};

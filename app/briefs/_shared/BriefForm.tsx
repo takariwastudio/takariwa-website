@@ -3,17 +3,18 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
+import { createBrowserSupabase } from "@/lib/supabase/client";
 import {
-  STEPS,
   emptyFormData,
   type BriefFormData,
+  type BriefType,
+  type DoneConfig,
   type FieldDef,
+  type IntroConfig,
   type StepDef,
-} from "./steps";
+} from "./types";
 import { submitBrief } from "./actions";
 
-// Mismos 5 colores que ya rotan en el marquee de la home — un acento por
-// sección, no una paleta nueva.
 const ACCENTS = ["yellow", "orange", "magenta", "purple", "blue"] as const;
 type Accent = (typeof ACCENTS)[number];
 
@@ -37,6 +38,51 @@ const TEXT_ACCENT: Record<Accent, string> = {
   magenta: "text-magenta",
   purple: "text-purple",
   blue: "text-blue",
+};
+
+interface FlatQuestion {
+  field: FieldDef;
+  section: StepDef;
+  sectionIndex: number;
+}
+
+function flattenQuestions(steps: StepDef[]): FlatQuestion[] {
+  return steps.flatMap((section, sectionIndex) =>
+    section.fields.map((field) => ({ field, section, sectionIndex })),
+  );
+}
+
+function validateField(
+  field: FieldDef,
+  value: string | string[] | undefined,
+): string | null {
+  if (!field.required) return null;
+
+  if (field.type === "checkbox-group" || field.type === "file") {
+    if (!Array.isArray(value) || value.length === 0) {
+      return field.type === "file"
+        ? "Sube al menos un archivo."
+        : "Selecciona al menos una opción.";
+    }
+    return null;
+  }
+  if (field.type === "radio-group") {
+    if (!value) return "Selecciona una opción.";
+    return null;
+  }
+
+  const str = String(value ?? "").trim();
+  if (!str) return "Este campo es obligatorio.";
+  if (field.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str)) {
+    return "Ingresa un correo válido.";
+  }
+  return null;
+}
+
+const SLIDE_VARIANTS = {
+  enter: (dir: number) => ({ opacity: 0, y: dir >= 0 ? 24 : -24 }),
+  center: { opacity: 1, y: 0 },
+  exit: (dir: number) => ({ opacity: 0, y: dir >= 0 ? -24 : 24 }),
 };
 
 function WhatsAppIcon() {
@@ -166,67 +212,31 @@ const SOCIAL_LINKS = [
   },
 ];
 
-interface FlatQuestion {
-  field: FieldDef;
-  section: StepDef;
-  sectionIndex: number;
-  isFirstOfSection: boolean;
+interface BriefFormProps {
+  briefType: BriefType;
+  steps: StepDef[];
+  intro: IntroConfig;
+  done: DoneConfig;
 }
 
-function flattenQuestions(): FlatQuestion[] {
-  return STEPS.flatMap((section, sectionIndex) =>
-    section.fields.map((field, i) => ({
-      field,
-      section,
-      sectionIndex,
-      isFirstOfSection: i === 0,
-    })),
-  );
-}
-
-function validateField(
-  field: FieldDef,
-  value: string | string[] | undefined,
-): string | null {
-  if (!field.required) return null;
-
-  if (field.type === "checkbox-group") {
-    if (!Array.isArray(value) || value.length === 0)
-      return "Selecciona al menos una opción.";
-    return null;
-  }
-  if (field.type === "radio-group") {
-    if (!value) return "Selecciona una opción.";
-    return null;
-  }
-
-  const str = String(value ?? "").trim();
-  if (!str) return "Este campo es obligatorio.";
-  if (field.type === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(str)) {
-    return "Ingresa un correo válido.";
-  }
-  return null;
-}
-
-const SLIDE_VARIANTS = {
-  enter: (dir: number) => ({ opacity: 0, y: dir >= 0 ? 24 : -24 }),
-  center: { opacity: 1, y: 0 },
-  exit: (dir: number) => ({ opacity: 0, y: dir >= 0 ? -24 : 24 }),
-};
-
-export default function BriefForm() {
-  const questions = useMemo(() => flattenQuestions(), []);
+export default function BriefForm({
+  briefType,
+  steps,
+  intro,
+  done,
+}: BriefFormProps) {
+  const questions = useMemo(() => flattenQuestions(steps), [steps]);
   const total = questions.length;
 
-  // -1 = intro · 0..total-1 = preguntas · total = revisión
   const [qIndex, setQIndex] = useState(-1);
   const [direction, setDirection] = useState(1);
-  const [data, setData] = useState<BriefFormData>(emptyFormData());
+  const [data, setData] = useState<BriefFormData>(() => emptyFormData(steps));
   const [error, setError] = useState<string | null>(null);
   const [status, setStatus] = useState<
     "idle" | "submitting" | "done" | "error"
   >("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState<Record<string, boolean>>({});
 
   const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const isIntro = qIndex === -1;
@@ -238,7 +248,8 @@ export default function BriefForm() {
     if (
       current &&
       current.field.type !== "checkbox-group" &&
-      current.field.type !== "radio-group"
+      current.field.type !== "radio-group" &&
+      current.field.type !== "file"
     ) {
       inputRef.current?.focus();
     }
@@ -255,6 +266,44 @@ export default function BriefForm() {
       ? list.filter((o) => o !== option)
       : [...list, option];
     setField(id, next);
+  }
+
+  async function handleFileSelect(field: FieldDef, files: FileList | null) {
+    if (!files || files.length === 0) return;
+    const current = (data[field.id] as string[]) ?? [];
+    const room = (field.maxFiles ?? 3) - current.length;
+    const toUpload = Array.from(files).slice(0, Math.max(0, room));
+    if (toUpload.length === 0) return;
+
+    setUploading((u) => ({ ...u, [field.id]: true }));
+    const supabase = createBrowserSupabase();
+    const uploaded: string[] = [];
+
+    for (const file of toUpload) {
+      const path = `${briefType}/${crypto.randomUUID()}-${file.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from("brief-uploads")
+        .upload(path, file);
+      if (uploadError) {
+        console.error("Error subiendo archivo:", uploadError);
+        continue;
+      }
+      const { data: pub } = supabase.storage
+        .from("brief-uploads")
+        .getPublicUrl(path);
+      uploaded.push(pub.publicUrl);
+    }
+
+    setField(field.id, [...current, ...uploaded]);
+    setUploading((u) => ({ ...u, [field.id]: false }));
+  }
+
+  function removeFile(fieldId: string, url: string) {
+    const list = (data[fieldId] as string[]) ?? [];
+    setField(
+      fieldId,
+      list.filter((u) => u !== url),
+    );
   }
 
   function goNext() {
@@ -278,15 +327,13 @@ export default function BriefForm() {
 
   function selectRadio(id: string, option: string) {
     setField(id, option);
-    // Auto-avanza al elegir, como en un typeform real — con un respiro breve
-    // para que se alcance a ver la selección antes de que la pantalla cambie.
     window.setTimeout(() => goNext(), 320);
   }
 
   async function handleSubmit() {
     setStatus("submitting");
     setSubmitError(null);
-    const result = await submitBrief(data);
+    const result = await submitBrief(briefType, data);
     if (result.ok) {
       setStatus("done");
     } else {
@@ -304,16 +351,13 @@ export default function BriefForm() {
           transition={{ duration: 0.5 }}
         >
           <span className="font-body text-[0.7rem] tracking-[0.24em] text-yellow uppercase md:text-xs md:tracking-[0.28em]">
-            Brief recibido
+            {done.eyebrow}
           </span>
           <h1 className="headline font-display mt-3 text-[2.75rem] leading-[0.92] text-paper sm:text-[4rem]">
-            <span data-text="Listo.">Listo.</span>
+            <span data-text={done.headline}>{done.headline}</span>
           </h1>
           <p className="mt-4 max-w-md font-body text-[0.95rem] leading-relaxed text-paper/80">
-            Gracias por tomarte el tiempo. El equipo de Takariwa revisa esto y
-            te escribe a{" "}
-            <strong className="text-paper">{String(data.email)}</strong> con los
-            próximos pasos.
+            {done.body.replace("{{email}}", String(data.email))}
           </p>
         </motion.div>
       </div>
@@ -327,6 +371,20 @@ export default function BriefForm() {
         if (e.key === "Escape") goBack();
       }}
     >
+      {/* <header className="flex shrink-0 items-center justify-between px-6 py-5 md:px-10 md:py-6">
+        <img
+          src="/logo.svg"
+          alt="Takariwa Studio"
+          className="h-6 w-auto md:h-7"
+        />
+        <Link
+          href="/"
+          className="rounded-full border border-paper/15 px-4 py-2 font-body text-xs font-semibold text-paper transition-transform hover:-translate-y-0.5"
+        >
+          Volver al inicio
+        </Link>
+      </header> */}
+
       <main className="flex flex-1 items-center justify-center px-6 py-6">
         <div className="w-full max-w-2xl">
           {/* {!isIntro && (
@@ -362,23 +420,19 @@ export default function BriefForm() {
                   transition={{ duration: 0.35, ease: "easeOut" }}
                 >
                   <span className="font-body text-[0.7rem] tracking-[0.24em] text-yellow uppercase md:text-xs md:tracking-[0.28em]">
-                    Antes de tocar un solo píxel
+                    {intro.eyebrow}
                   </span>
                   <h1 className="headline font-display mt-3 text-[2.5rem] leading-[0.95] text-paper sm:text-[3.5rem]">
-                    <span data-text="No es un formulario. Es la excavación.">
-                      No es un formulario. Es la excavación.
-                    </span>
+                    <span data-text={intro.headline}>{intro.headline}</span>
                   </h1>
-                  <p className="mt-5 max-w-lg font-body text-[0.95rem] leading-relaxed text-paper/75 md:text-base">
-                    Antes de proponer, escuchamos. Antes de escuchar,
-                    preguntamos lo que nadie pregunta, así arranca nuestro
-                    proceso, y este brief es exactamente eso.
-                  </p>
-                  <p className="mt-3 max-w-lg font-body text-[0.95rem] leading-relaxed text-paper/75 md:text-base">
-                    Son {total} preguntas, una a la vez. Nada de bloques eternos
-                    ni casillas para rellenar por rellenar. Lo que no tengas
-                    claro todavía, lo saltas.
-                  </p>
+                  {intro.paragraphs.map((p, i) => (
+                    <p
+                      key={i}
+                      className={`max-w-lg font-body text-[0.95rem] leading-relaxed text-paper/75 md:text-base ${i === 0 ? "mt-5" : "mt-3"}`}
+                    >
+                      {p}
+                    </p>
+                  ))}
                   <button
                     type="button"
                     onClick={() => {
@@ -387,7 +441,7 @@ export default function BriefForm() {
                     }}
                     className="mt-8 w-fit rounded-full bg-yellow px-6 py-3 font-body text-sm font-semibold text-ink transition-transform hover:-translate-y-0.5"
                   >
-                    Empezar →
+                    {intro.ctaLabel}
                   </button>
                 </motion.section>
               )}
@@ -522,6 +576,52 @@ export default function BriefForm() {
                     </div>
                   )}
 
+                  {current.field.type === "file" && (
+                    <div>
+                      <div className="flex flex-wrap gap-2">
+                        {((data[current.field.id] as string[]) ?? []).map(
+                          (url) => (
+                            <span
+                              key={url}
+                              className="flex items-center gap-2 rounded-full border border-paper/15 py-2 pr-2 pl-4 font-body text-sm text-paper"
+                            >
+                              {url.split("/").pop()?.slice(0, 24)}
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  removeFile(current.field.id, url)
+                                }
+                                className="rounded-full bg-paper/10 px-2 py-0.5 text-xs hover:bg-paper/20"
+                                aria-label="Quitar archivo"
+                              >
+                                ✕
+                              </button>
+                            </span>
+                          ),
+                        )}
+                      </div>
+
+                      {((data[current.field.id] as string[]) ?? []).length <
+                        (current.field.maxFiles ?? 3) && (
+                        <label className="mt-2 inline-flex cursor-pointer items-center gap-2 rounded-full border border-dashed border-paper/25 px-4 py-2.5 font-body text-sm text-paper/70 hover:border-paper/50">
+                          {uploading[current.field.id]
+                            ? "Subiendo…"
+                            : `Subir archivo (máx. ${current.field.maxFiles ?? 3})`}
+                          <input
+                            type="file"
+                            accept="image/*,video/*"
+                            multiple
+                            className="hidden"
+                            disabled={uploading[current.field.id]}
+                            onChange={(e) =>
+                              handleFileSelect(current.field, e.target.files)
+                            }
+                          />
+                        </label>
+                      )}
+                    </div>
+                  )}
+
                   {error && (
                     <motion.p
                       initial={{ opacity: 0, y: -4 }}
@@ -559,7 +659,7 @@ export default function BriefForm() {
                   </div>
 
                   <div className="flex flex-col gap-6">
-                    {STEPS.map((s) => {
+                    {steps.map((s) => {
                       const rows = s.fields
                         .map((f) => {
                           const val = data[f.id];
@@ -642,6 +742,26 @@ export default function BriefForm() {
           )}
         </div>
       </main>
+
+      {/* <footer className="flex shrink-0 flex-col items-center gap-3 border-t border-paper/10 px-6 py-5 sm:flex-row sm:justify-between">
+        <span className="font-body text-xs text-paper/40">
+          © {new Date().getFullYear()} Takariwa Studio — disturbio creativo
+        </span>
+        <nav className="flex items-center gap-4" aria-label="Redes sociales">
+          {SOCIAL_LINKS.map(({ label, href, Icon }) => (
+            <a
+              key={label}
+              href={href}
+              target={href.startsWith("http") ? "_blank" : undefined}
+              rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+              aria-label={label}
+              className="text-paper/40 transition-colors hover:text-yellow [&_svg]:h-[1.05rem] [&_svg]:w-[1.05rem]"
+            >
+              <Icon />
+            </a>
+          ))}
+        </nav>
+      </footer> */}
     </div>
   );
 }
