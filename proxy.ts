@@ -1,24 +1,28 @@
 import { NextRequest, NextResponse } from "next/server";
+import { verifySessionToken } from "@/lib/admin-session";
 
 // En Next.js 16 el archivo "middleware.ts" fue renombrado a "proxy.ts"
 // (la función exportada también cambia de nombre: middleware -> proxy).
-// Protección mínima para /admin — suficiente para no dejarlo abierto al
-// público; no reemplaza un sistema de auth real si el equipo crece.
-export function proxy(req: NextRequest) {
-  const auth = req.headers.get("authorization");
+// Protege /admin con una sesión real (cookie firmada), no auth básica del
+// navegador — ver /admin/login para el formulario.
+export async function proxy(req: NextRequest) {
+  const { pathname } = req.nextUrl;
 
-  if (auth) {
-    const [, encoded] = auth.split(" ");
-    const [user, pass] = atob(encoded).split(":");
-    if (user === process.env.ADMIN_USER && pass === process.env.ADMIN_PASSWORD) {
-      return NextResponse.next();
-    }
+  if (pathname.startsWith("/admin/login")) {
+    return NextResponse.next();
   }
 
-  return new NextResponse("Autenticación requerida", {
-    status: 401,
-    headers: { "WWW-Authenticate": 'Basic realm="Takariwa Admin"' },
-  });
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  const token = req.cookies.get("admin_session")?.value;
+  const valid = secret ? await verifySessionToken(token, secret) : false;
+
+  if (!valid) {
+    const loginUrl = new URL("/admin/login", req.url);
+    loginUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

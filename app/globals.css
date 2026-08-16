@@ -13,6 +13,50 @@
 @theme inline {
   --font-display: var(--font-display-raw);
   --font-body: var(--font-body-raw);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+}
+
+/* Variables de shadcn/ui, escopadas al panel admin — mapeadas a la misma
+   paleta de marca (Ink/Paper/Amarillo/Naranja/etc.), no una paleta nueva.
+   No viven en :root para no afectar el resto del sitio público. */
+.admin {
+  --background: var(--color-ink);
+  --foreground: var(--color-paper);
+  --card: #1b1a19;
+  --card-foreground: var(--color-paper);
+  --popover: #1b1a19;
+  --popover-foreground: var(--color-paper);
+  --primary: var(--color-yellow);
+  --primary-foreground: var(--color-ink);
+  --secondary: var(--color-blue);
+  --secondary-foreground: var(--color-paper);
+  --muted: #201f1e;
+  --muted-foreground: #a8a6a3;
+  --accent: var(--color-orange);
+  --accent-foreground: var(--color-ink);
+  --destructive: var(--color-magenta);
+  --destructive-foreground: var(--color-paper);
+  --border: rgba(243, 243, 243, 0.12);
+  --input: rgba(243, 243, 243, 0.08);
+  --ring: var(--color-yellow);
 }
 
 .headline span {
