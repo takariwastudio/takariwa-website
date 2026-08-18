@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Inbox, Globe, Palette, CalendarClock } from "lucide-react";
+import { Inbox, Globe, Palette, Share2, CalendarClock } from "lucide-react";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { daysAgoISOString } from "@/lib/dates";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,6 +21,7 @@ export default async function AdminDashboardPage() {
   const total = rows?.length ?? 0;
   const webCount = rows?.filter((r) => r.type === "web").length ?? 0;
   const disenoCount = rows?.filter((r) => r.type === "diseno").length ?? 0;
+  const socialCount = rows?.filter((r) => r.type === "social").length ?? 0;
 
   const stats = [
     { label: "Total de briefs", value: total, icon: Inbox },
@@ -31,6 +32,7 @@ export default async function AdminDashboardPage() {
     },
     { label: "Briefs de web", value: webCount, icon: Globe },
     { label: "Briefs de diseño", value: disenoCount, icon: Palette },
+    { label: "Briefs de social", value: socialCount, icon: Share2 },
   ];
 
   return (
@@ -42,7 +44,7 @@ export default async function AdminDashboardPage() {
         Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
         {stats.map((s) => (
           <Card key={s.label}>
             <CardHeader className="flex-row items-center justify-between space-y-0">

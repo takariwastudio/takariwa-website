@@ -10,6 +10,7 @@ import {
 } from "@/app/briefs/_shared/types";
 import { STEPS as WEB_STEPS } from "@/app/briefs/web_brief/steps";
 import { STEPS as DESIGN_STEPS } from "@/app/briefs/design_brief/steps";
+import { STEPS as SOCIAL_STEPS } from "@/app/briefs/social_brief/steps";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { StatusSelect } from "./StatusSelect";
@@ -19,6 +20,7 @@ export const dynamic = "force-dynamic";
 const STEPS_BY_TYPE: Record<BriefType, StepDef[]> = {
   web: WEB_STEPS,
   diseno: DESIGN_STEPS,
+  social: SOCIAL_STEPS,
 };
 
 function isImageUrl(url: string) {
@@ -55,7 +57,15 @@ export default async function AdminBriefDetailPage({
       </Link>
 
       <div className="mt-6 flex items-center gap-3">
-        <Badge variant={type === "web" ? "secondary" : "destructive"}>
+        <Badge
+          variant={
+            type === "web"
+              ? "secondary"
+              : type === "diseno"
+                ? "destructive"
+                : "purple"
+          }
+        >
           {BRIEF_TYPE_LABEL[type]}
         </Badge>
         <StatusSelect id={brief.id} initialStatus={brief.status} />

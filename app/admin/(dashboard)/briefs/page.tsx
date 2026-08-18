@@ -7,10 +7,12 @@ import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const TYPE_VARIANT: Record<BriefType, "secondary" | "destructive"> = {
-  web: "secondary",
-  diseno: "destructive",
-};
+const TYPE_VARIANT: Record<BriefType, "secondary" | "destructive" | "purple"> =
+  {
+    web: "secondary",
+    diseno: "destructive",
+    social: "purple",
+  };
 
 // Anchos fijos por columna — con table-layout:fixed, esto es lo que evita
 // que las columnas "bailen" de tamaño al cambiar de pestaña según el largo
@@ -29,7 +31,8 @@ export default async function AdminBriefListPage({
   searchParams: Promise<{ type?: string }>;
 }) {
   const { type } = await searchParams;
-  const filter = type === "web" || type === "diseno" ? type : "all";
+  const filter =
+    type === "web" || type === "diseno" || type === "social" ? type : "all";
 
   const supabase = createServerSupabase();
   let query = supabase
@@ -45,6 +48,7 @@ export default async function AdminBriefListPage({
     { label: "Todos", value: "all" },
     { label: "Web", value: "web" },
     { label: "Diseño", value: "diseno" },
+    { label: "Social", value: "social" },
   ];
 
   return (

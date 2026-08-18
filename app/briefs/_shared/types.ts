@@ -52,9 +52,10 @@ export interface DoneConfig {
   body: string;
 }
 
-export type BriefType = "web" | "diseno";
+export type BriefType = "web" | "diseno" | "social";
 
 export const BRIEF_TYPE_LABEL: Record<BriefType, string> = {
   web: "Web",
   diseno: "Diseño",
+  social: "Social Media",
 };

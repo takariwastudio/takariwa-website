@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { createBrowserSupabase } from "@/lib/supabase/client";
@@ -238,22 +238,19 @@ export default function BriefForm({
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
 
-  const inputRef = useRef<HTMLInputElement | HTMLTextAreaElement>(null);
   const isIntro = qIndex === -1;
   const isReview = qIndex === total;
   const current = !isIntro && !isReview ? questions[qIndex] : null;
   const accent: Accent = ACCENTS[(current?.sectionIndex ?? 0) % ACCENTS.length];
 
-  useEffect(() => {
-    if (
-      current &&
-      current.field.type !== "checkbox-group" &&
-      current.field.type !== "radio-group" &&
-      current.field.type !== "file"
-    ) {
-      inputRef.current?.focus();
-    }
-  }, [qIndex, current]);
+  // Ref callback en vez de useEffect + ref fija: con AnimatePresence
+  // mode="wait", el nuevo campo no existe en el DOM todavía cuando un
+  // useEffect dispararía (espera a que la pregunta anterior termine de
+  // desvanecerse). Una ref callback sí se ejecuta en el instante exacto en
+  // que ESE input se monta, sin importar cuándo termine la animación.
+  function autoFocusRef(el: HTMLInputElement | HTMLTextAreaElement | null) {
+    el?.focus();
+  }
 
   function setField(id: string, value: string | string[]) {
     setData((prev) => ({ ...prev, [id]: value }));
@@ -490,7 +487,7 @@ export default function BriefForm({
 
                   {current.field.type === "textarea" && (
                     <textarea
-                      ref={inputRef as React.RefObject<HTMLTextAreaElement>}
+                      ref={autoFocusRef}
                       id={current.field.id}
                       rows={3}
                       value={(data[current.field.id] as string) ?? ""}
@@ -512,7 +509,7 @@ export default function BriefForm({
                     current.field.type === "tel" ||
                     current.field.type === "date") && (
                     <input
-                      ref={inputRef as React.RefObject<HTMLInputElement>}
+                      ref={autoFocusRef}
                       id={current.field.id}
                       type={current.field.type}
                       value={(data[current.field.id] as string) ?? ""}
