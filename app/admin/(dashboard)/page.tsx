@@ -1,10 +1,27 @@
 import Link from "next/link";
-import { Inbox, Globe, Palette, Share2, CalendarClock } from "lucide-react";
+import {
+  Inbox,
+  Globe,
+  Palette,
+  Share2,
+  Clapperboard,
+  CalendarClock,
+} from "lucide-react";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { daysAgoISOString } from "@/lib/dates";
+import { BRIEF_TYPE_LABEL, type BriefType } from "@/app/briefs/_shared/types";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const dynamic = "force-dynamic";
+
+// Un ícono por tipo — agregar un brief nuevo es una línea acá, no reescribir
+// el resto del dashboard.
+const TYPE_ICON: Record<BriefType, typeof Inbox> = {
+  web: Globe,
+  diseno: Palette,
+  social: Share2,
+  audiovisual: Clapperboard,
+};
 
 export default async function AdminDashboardPage() {
   const supabase = createServerSupabase();
@@ -19,9 +36,11 @@ export default async function AdminDashboardPage() {
   ]);
 
   const total = rows?.length ?? 0;
-  const webCount = rows?.filter((r) => r.type === "web").length ?? 0;
-  const disenoCount = rows?.filter((r) => r.type === "diseno").length ?? 0;
-  const socialCount = rows?.filter((r) => r.type === "social").length ?? 0;
+  const types = Object.keys(TYPE_ICON) as BriefType[];
+  const countByType = types.map((t) => ({
+    type: t,
+    count: rows?.filter((r) => r.type === t).length ?? 0,
+  }));
 
   const stats = [
     { label: "Total de briefs", value: total, icon: Inbox },
@@ -30,9 +49,11 @@ export default async function AdminDashboardPage() {
       value: newThisWeek ?? 0,
       icon: CalendarClock,
     },
-    { label: "Briefs de web", value: webCount, icon: Globe },
-    { label: "Briefs de diseño", value: disenoCount, icon: Palette },
-    { label: "Briefs de social", value: socialCount, icon: Share2 },
+    ...countByType.map((c) => ({
+      label: `Briefs de ${BRIEF_TYPE_LABEL[c.type].toLowerCase()}`,
+      value: c.count,
+      icon: TYPE_ICON[c.type],
+    })),
   ];
 
   return (
@@ -44,7 +65,7 @@ export default async function AdminDashboardPage() {
         Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {stats.map((s) => (
           <Card key={s.label}>
             <CardHeader className="flex-row items-center justify-between space-y-0">

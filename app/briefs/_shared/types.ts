@@ -52,10 +52,27 @@ export interface DoneConfig {
   body: string;
 }
 
-export type BriefType = "web" | "diseno" | "social";
+export type BriefType = "web" | "diseno" | "social" | "audiovisual";
 
 export const BRIEF_TYPE_LABEL: Record<BriefType, string> = {
   web: "Web",
   diseno: "Diseño",
   social: "Social Media",
+  audiovisual: "Audiovisual",
+};
+
+// Centralizado acá para no repetir un ternario por cada tipo nuevo en cada
+// página que muestra el badge — agregar un tipo es una línea acá, no tocar
+// cada archivo que renderiza un Badge.
+export type BriefTypeBadgeVariant =
+  | "secondary"
+  | "destructive"
+  | "purple"
+  | "accent";
+
+export const BRIEF_TYPE_VARIANT: Record<BriefType, BriefTypeBadgeVariant> = {
+  web: "secondary",
+  diseno: "destructive",
+  social: "purple",
+  audiovisual: "accent",
 };

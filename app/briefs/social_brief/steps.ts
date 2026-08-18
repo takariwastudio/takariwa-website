@@ -303,7 +303,7 @@ export const INTRO: IntroConfig = {
   eyebrow: "Antes de hacer ruido",
   headline: "Que no puedan ignorarte, empieza aquí.",
   paragraphs: [
-    '"El Ruido" es como llamamos a todo lo que hacemos en redes — contenido con un solo objetivo: que no puedan ignorarte. Pero antes de producir una sola pieza, necesitamos entender tu marca por dentro.',
+    '"El Ruido" es como llamamos a todo lo que hacemos en redes, contenido con un solo objetivo: que no puedan ignorarte. Pero antes de producir una sola pieza, necesitamos entender tu marca por dentro.',
     `Son ${STEPS.flatMap((s) => s.fields).length} preguntas, una a la vez. Mientras más honesto seas, menos vamos a tener que adivinar.`,
   ],
   ctaLabel: "Empecemos →",

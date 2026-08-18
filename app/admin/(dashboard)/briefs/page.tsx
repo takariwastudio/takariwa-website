@@ -1,18 +1,17 @@
 import Link from "next/link";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { BRIEF_TYPE_LABEL, type BriefType } from "@/app/briefs/_shared/types";
+import {
+  BRIEF_TYPE_LABEL,
+  BRIEF_TYPE_VARIANT,
+  type BriefType,
+} from "@/app/briefs/_shared/types";
 import { statusLabel, statusVariant } from "@/lib/brief-status";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
 
-const TYPE_VARIANT: Record<BriefType, "secondary" | "destructive" | "purple"> =
-  {
-    web: "secondary",
-    diseno: "destructive",
-    social: "purple",
-  };
+const ALL_TYPES: BriefType[] = ["web", "diseno", "social", "audiovisual"];
 
 // Anchos fijos por columna — con table-layout:fixed, esto es lo que evita
 // que las columnas "bailen" de tamaño al cambiar de pestaña según el largo
@@ -31,8 +30,9 @@ export default async function AdminBriefListPage({
   searchParams: Promise<{ type?: string }>;
 }) {
   const { type } = await searchParams;
-  const filter =
-    type === "web" || type === "diseno" || type === "social" ? type : "all";
+  const filter = ALL_TYPES.includes(type as BriefType)
+    ? (type as BriefType)
+    : "all";
 
   const supabase = createServerSupabase();
   let query = supabase
@@ -46,9 +46,7 @@ export default async function AdminBriefListPage({
 
   const tabs: { label: string; value: "all" | BriefType }[] = [
     { label: "Todos", value: "all" },
-    { label: "Web", value: "web" },
-    { label: "Diseño", value: "diseno" },
-    { label: "Social", value: "social" },
+    ...ALL_TYPES.map((t) => ({ label: BRIEF_TYPE_LABEL[t], value: t })),
   ];
 
   return (
@@ -60,7 +58,7 @@ export default async function AdminBriefListPage({
         Briefs recibidos
       </h1>
 
-      <div className="mb-8 flex gap-2">
+      <div className="mb-8 flex flex-wrap gap-2">
         {tabs.map((tab) => (
           <Link
             key={tab.value}
@@ -134,7 +132,7 @@ export default async function AdminBriefListPage({
                     )}
                   </td>
                   <td className="px-4 py-3">
-                    <Badge variant={TYPE_VARIANT[b.type as BriefType]}>
+                    <Badge variant={BRIEF_TYPE_VARIANT[b.type as BriefType]}>
                       {BRIEF_TYPE_LABEL[b.type as BriefType] ?? b.type}
                     </Badge>
                   </td>

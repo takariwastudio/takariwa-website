@@ -32,7 +32,9 @@ export async function notifyNewBrief(
       ? String(data.objetivo_principal ?? "")
       : type === "diseno"
         ? String(data.origen_marca ?? data.alma_marca ?? "")
-        : String(data.a_que_se_dedican ?? "");
+        : type === "social"
+          ? String(data.a_que_se_dedican ?? "")
+          : String(data.mensaje_clave ?? data.objetivo_principal ?? "");
 
   try {
     await resend.emails.send({
