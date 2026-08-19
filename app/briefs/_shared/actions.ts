@@ -2,6 +2,7 @@
 
 import { createServerSupabase } from "@/lib/supabase/server";
 import { notifyNewBrief } from "@/lib/email";
+import { notifyDiscordBrief } from "@/lib/discord";
 import type { BriefFormData, BriefType } from "./types";
 
 export interface SubmitResult {
@@ -48,9 +49,17 @@ export async function submitBrief(
     };
   }
 
-  // No bloqueamos la respuesta al usuario si el correo tarda o falla —
-  // el brief ya quedó guardado, que es lo que no se puede perder.
+  // No bloqueamos la respuesta al usuario si el correo o Discord tardan o
+  // fallan — el brief ya quedó guardado, que es lo que no se puede perder.
   void notifyNewBrief(type, inserted.id, empresa, contactoNombre, email, data);
+  void notifyDiscordBrief(
+    type,
+    inserted.id,
+    empresa,
+    contactoNombre,
+    email,
+    data,
+  );
 
   return { ok: true };
 }
