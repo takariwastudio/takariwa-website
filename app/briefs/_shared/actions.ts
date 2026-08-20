@@ -1,5 +1,6 @@
 "use server";
 
+import { after } from "next/server";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { notifyNewBrief } from "@/lib/email";
 import { notifyDiscordBrief } from "@/lib/discord";
@@ -49,17 +50,25 @@ export async function submitBrief(
     };
   }
 
-  // No bloqueamos la respuesta al usuario si el correo o Discord tardan o
-  // fallan — el brief ya quedó guardado, que es lo que no se puede perder.
-  void notifyNewBrief(type, inserted.id, empresa, contactoNombre, email, data);
-  void notifyDiscordBrief(
-    type,
-    inserted.id,
-    empresa,
-    contactoNombre,
-    email,
-    data,
-  );
+  // No queremos que el usuario espere a que salgan el correo y Discord antes
+  // de ver "Listo." — pero tampoco podemos simplemente no esperarlos (void),
+  // porque en Vercel la función serverless puede congelarse justo después de
+  // responder, matando cualquier trabajo pendiente a mitad de camino. after()
+  // es la forma correcta: la plataforma mantiene la ejecución viva hasta que
+  // esto termine, sin bloquear la respuesta que ya recibió el usuario.
+  after(async () => {
+    await Promise.allSettled([
+      notifyNewBrief(type, inserted.id, empresa, contactoNombre, email, data),
+      notifyDiscordBrief(
+        type,
+        inserted.id,
+        empresa,
+        contactoNombre,
+        email,
+        data,
+      ),
+    ]);
+  });
 
   return { ok: true };
 }
