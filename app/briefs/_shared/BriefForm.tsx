@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Link from "next/link";
 import { AnimatePresence, motion } from "framer-motion";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 import {
@@ -31,13 +30,6 @@ const CHIP_TEXT: Record<Accent, string> = {
   magenta: "text-paper",
   purple: "text-paper",
   blue: "text-paper",
-};
-const TEXT_ACCENT: Record<Accent, string> = {
-  yellow: "text-yellow",
-  orange: "text-orange",
-  magenta: "text-magenta",
-  purple: "text-purple",
-  blue: "text-blue",
 };
 
 interface FlatQuestion {
@@ -452,10 +444,11 @@ export default function BriefForm({
                   animate="center"
                   exit="exit"
                   transition={{ duration: 0.3, ease: "easeOut" }}
+                  className="rounded-2xl border border-paper/10 bg-paper/[0.04] p-6 sm:p-8"
                 >
-                  <div className="mb-2 flex items-center gap-2">
+                  <div className="mb-4 flex items-center gap-2">
                     <span
-                      className={`font-body text-xs font-semibold tracking-wide ${TEXT_ACCENT[accent]}`}
+                      className={`inline-flex items-center rounded-full px-3 py-1 font-body text-xs font-semibold tracking-wide ${CHIP_BG[accent]} ${CHIP_TEXT[accent]}`}
                     >
                       {current.section.number} · {current.section.title}
                     </span>
