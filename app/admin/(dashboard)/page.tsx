@@ -57,7 +57,7 @@ export default async function AdminDashboardPage() {
   ];
 
   return (
-    <div className="px-8 py-10">
+    <div className="px-4 py-6 sm:px-6 md:px-8 md:py-10">
       <p className="font-body text-[0.7rem] tracking-[0.2em] text-accent uppercase">
         Takariwa Studio
       </p>
@@ -65,7 +65,7 @@ export default async function AdminDashboardPage() {
         Dashboard
       </h1>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 xl:grid-cols-6">
         {stats.map((s) => (
           <Card key={s.label}>
             <CardHeader className="flex-row items-center justify-between space-y-0">

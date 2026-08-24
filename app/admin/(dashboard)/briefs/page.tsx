@@ -15,7 +15,8 @@ const ALL_TYPES: BriefType[] = ["web", "diseno", "social", "audiovisual"];
 
 // Anchos fijos por columna — con table-layout:fixed, esto es lo que evita
 // que las columnas "bailen" de tamaño al cambiar de pestaña según el largo
-// del contenido que traiga cada filtro.
+// del contenido que traiga cada filtro. Solo aplica en la tabla de md+; en
+// mobile se usa la vista de tarjetas de más abajo.
 const COLS = [
   { width: "26%", label: "Empresa" },
   { width: "28%", label: "Contacto" },
@@ -50,15 +51,15 @@ export default async function AdminBriefListPage({
   ];
 
   return (
-    <div className="px-8 py-10">
+    <div className="px-4 py-6 sm:px-6 md:px-8 md:py-10">
       <p className="font-body text-[0.7rem] tracking-[0.2em] text-accent uppercase">
         Takariwa Studio
       </p>
-      <h1 className="font-display mt-1 mb-6 text-4xl tracking-wide text-foreground">
+      <h1 className="font-display mt-1 mb-6 text-3xl tracking-wide text-foreground sm:text-4xl">
         Briefs recibidos
       </h1>
 
-      <div className="mb-8 flex flex-wrap gap-2">
+      <div className="mb-6 flex flex-wrap gap-2 md:mb-8">
         {tabs.map((tab) => (
           <Link
             key={tab.value}
@@ -68,7 +69,7 @@ export default async function AdminBriefListPage({
                 : `/admin/briefs?type=${tab.value}`
             }
             className={cn(
-              "rounded-full border px-4 py-2 font-body text-sm font-semibold transition-colors",
+              "rounded-full border px-3.5 py-1.5 font-body text-sm font-semibold transition-colors sm:px-4 sm:py-2",
               filter === tab.value
                 ? "border-transparent bg-primary text-primary-foreground"
                 : "border-border text-muted-foreground hover:text-foreground",
@@ -92,63 +93,103 @@ export default async function AdminBriefListPage({
       )}
 
       {!error && briefs && briefs.length > 0 && (
-        <div className="overflow-hidden rounded-xl border border-border">
-          <table
-            className="w-full font-body text-sm"
-            style={{ tableLayout: "fixed" }}
-          >
-            <colgroup>
-              {COLS.map((c) => (
-                <col key={c.label} style={{ width: c.width }} />
-              ))}
-            </colgroup>
-            <thead>
-              <tr className="bg-card">
-                {COLS.map((c) => (
-                  <th
-                    key={c.label}
-                    className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase"
-                  >
-                    {c.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {briefs.map((b) => (
-                <tr key={b.id} className="border-t border-border">
-                  <td className="truncate px-4 py-3">
-                    <Link
-                      href={`/admin/briefs/${b.id}`}
-                      className="truncate font-semibold text-foreground hover:underline"
-                    >
-                      {b.empresa}
-                    </Link>
-                  </td>
-                  <td className="truncate px-4 py-3 text-foreground/80">
-                    {b.contacto}{" "}
-                    {b.email && (
-                      <span className="text-muted-foreground">· {b.email}</span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={BRIEF_TYPE_VARIANT[b.type as BriefType]}>
-                      {BRIEF_TYPE_LABEL[b.type as BriefType] ?? b.type}
-                    </Badge>
-                  </td>
-                  <td className="truncate px-4 py-3 text-foreground/80">
+        <>
+          {/* Mobile / tablet angosto: tarjetas apiladas — 5 columnas de
+              tabla nunca iban a caber legibles en una pantalla de teléfono. */}
+          <div className="flex flex-col gap-3 md:hidden">
+            {briefs.map((b) => (
+              <Link
+                key={b.id}
+                href={`/admin/briefs/${b.id}`}
+                className="block rounded-xl border border-border bg-card p-4"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <span className="font-body font-semibold text-foreground">
+                    {b.empresa}
+                  </span>
+                  <Badge variant={BRIEF_TYPE_VARIANT[b.type as BriefType]}>
+                    {BRIEF_TYPE_LABEL[b.type as BriefType] ?? b.type}
+                  </Badge>
+                </div>
+                <p className="mt-1 font-body text-sm text-foreground/70">
+                  {b.contacto}
+                  {b.email && (
+                    <span className="text-muted-foreground"> · {b.email}</span>
+                  )}
+                </p>
+                <div className="mt-3 flex items-center justify-between">
+                  <Badge variant={statusVariant(b.status)}>
+                    {statusLabel(b.status)}
+                  </Badge>
+                  <span className="font-body text-xs text-muted-foreground">
                     {new Date(b.created_at).toLocaleDateString("es-VE")}
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant={statusVariant(b.status)}>
-                      {statusLabel(b.status)}
-                    </Badge>
-                  </td>
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {/* md+: tabla completa. */}
+          <div className="hidden overflow-hidden rounded-xl border border-border md:block">
+            <table
+              className="w-full font-body text-sm"
+              style={{ tableLayout: "fixed" }}
+            >
+              <colgroup>
+                {COLS.map((c) => (
+                  <col key={c.label} style={{ width: c.width }} />
+                ))}
+              </colgroup>
+              <thead>
+                <tr className="bg-card">
+                  {COLS.map((c) => (
+                    <th
+                      key={c.label}
+                      className="px-4 py-3 text-left text-xs font-semibold tracking-wide text-muted-foreground uppercase"
+                    >
+                      {c.label}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {briefs.map((b) => (
+                  <tr key={b.id} className="border-t border-border">
+                    <td className="truncate px-4 py-3">
+                      <Link
+                        href={`/admin/briefs/${b.id}`}
+                        className="truncate font-semibold text-foreground hover:underline"
+                      >
+                        {b.empresa}
+                      </Link>
+                    </td>
+                    <td className="truncate px-4 py-3 text-foreground/80">
+                      {b.contacto}{" "}
+                      {b.email && (
+                        <span className="text-muted-foreground">
+                          · {b.email}
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge variant={BRIEF_TYPE_VARIANT[b.type as BriefType]}>
+                        {BRIEF_TYPE_LABEL[b.type as BriefType] ?? b.type}
+                      </Badge>
+                    </td>
+                    <td className="truncate px-4 py-3 text-foreground/80">
+                      {new Date(b.created_at).toLocaleDateString("es-VE")}
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge variant={statusVariant(b.status)}>
+                        {statusLabel(b.status)}
+                      </Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
       )}
     </div>
   );

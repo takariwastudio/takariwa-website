@@ -50,7 +50,7 @@ export default async function AdminBriefDetailPage({
   const steps = STEPS_BY_TYPE[type] ?? WEB_STEPS;
 
   return (
-    <div className="px-8 py-10">
+    <div className="px-4 py-6 sm:px-6 md:px-8 md:py-10">
       <Link
         href="/admin/briefs"
         className="inline-flex items-center gap-2 font-body text-sm font-semibold text-accent hover:underline"
