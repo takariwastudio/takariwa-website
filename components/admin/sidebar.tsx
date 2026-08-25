@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Inbox,
+  Link2,
   ArrowLeft,
   LogOut,
   PanelLeftClose,
@@ -19,7 +20,8 @@ import { logoutAdmin } from "@/app/admin/login/actions";
 const NAV_ITEMS = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { href: "/admin/briefs", label: "Briefs", icon: Inbox, exact: false },
-  // Más secciones del admin van aquí — clientes, contenido, lo que haga falta.
+  { href: "/admin/links", label: "Links", icon: Link2, exact: false },
+  // Más secciones del admin van aquí: clientes, contenido, lo que haga falta.
 ];
 
 const STORAGE_KEY = "admin_sidebar_collapsed";

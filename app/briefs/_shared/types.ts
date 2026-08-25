@@ -76,3 +76,10 @@ export const BRIEF_TYPE_VARIANT: Record<BriefType, BriefTypeBadgeVariant> = {
   social: "purple",
   audiovisual: "accent",
 };
+
+export const BRIEF_TYPE_SLUG: Record<BriefType, string> = {
+  web: "web_brief",
+  diseno: "design_brief",
+  social: "social_brief",
+  audiovisual: "audiovisual_brief",
+};
