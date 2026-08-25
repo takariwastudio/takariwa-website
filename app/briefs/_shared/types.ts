@@ -83,3 +83,13 @@ export const BRIEF_TYPE_SLUG: Record<BriefType, string> = {
   social: "social_brief",
   audiovisual: "audiovisual_brief",
 };
+
+// Mismos colores de marca que ya usan los badges — en hex, para todo lo que
+// no puede consumir clases de Tailwind directamente (el embed de Discord,
+// el fill de las gráficas del dashboard).
+export const BRIEF_TYPE_COLOR_HEX: Record<BriefType, string> = {
+  web: "281c64", // azul
+  diseno: "ed2b5d", // magenta
+  social: "a01789", // púrpura
+  audiovisual: "f48115", // naranja
+};

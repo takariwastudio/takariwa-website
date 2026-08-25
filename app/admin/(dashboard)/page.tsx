@@ -8,11 +8,24 @@ import {
   CalendarClock,
 } from "lucide-react";
 import { createServerSupabase } from "@/lib/supabase/server";
-import { daysAgoISOString } from "@/lib/dates";
-import { BRIEF_TYPE_LABEL, type BriefType } from "@/app/briefs/_shared/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { daysAgoISOString, bucketByDay } from "@/lib/dates";
+import {
+  BRIEF_TYPE_LABEL,
+  BRIEF_TYPE_COLOR_HEX,
+  type BriefType,
+} from "@/app/briefs/_shared/types";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { BriefsTrendChart, BriefsTypeChart } from "@/components/admin/charts";
 
 export const dynamic = "force-dynamic";
+
+const TREND_DAYS = 30;
 
 // Un ícono por tipo — agregar un brief nuevo es una línea acá, no reescribir
 // el resto del dashboard.
@@ -26,20 +39,31 @@ const TYPE_ICON: Record<BriefType, typeof Inbox> = {
 export default async function AdminDashboardPage() {
   const supabase = createServerSupabase();
   const sevenDaysAgo = daysAgoISOString(7);
+  const trendWindowStart = daysAgoISOString(TREND_DAYS);
 
-  const [{ data: rows }, { count: newThisWeek }] = await Promise.all([
-    supabase.from("briefs").select("type"),
-    supabase
-      .from("briefs")
-      .select("*", { count: "exact", head: true })
-      .gte("created_at", sevenDaysAgo),
-  ]);
+  // "allRows" alimenta las tarjetas de arriba (histórico completo, como
+  // siempre). "trendRows" es una consulta aparte, acotada a los últimos
+  // TREND_DAYS días, solo para las gráficas de abajo — no comparten
+  // resultado a propósito, para no confundir "total histórico" con
+  // "total de la ventana de la gráfica".
+  const [{ data: allRows }, { count: newThisWeek }, { data: trendRows }] =
+    await Promise.all([
+      supabase.from("briefs").select("type"),
+      supabase
+        .from("briefs")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", sevenDaysAgo),
+      supabase
+        .from("briefs")
+        .select("type, created_at")
+        .gte("created_at", trendWindowStart),
+    ]);
 
-  const total = rows?.length ?? 0;
+  const total = allRows?.length ?? 0;
   const types = Object.keys(TYPE_ICON) as BriefType[];
   const countByType = types.map((t) => ({
     type: t,
-    count: rows?.filter((r) => r.type === t).length ?? 0,
+    count: allRows?.filter((r) => r.type === t).length ?? 0,
   }));
 
   const stats = [
@@ -55,6 +79,24 @@ export default async function AdminDashboardPage() {
       icon: TYPE_ICON[c.type],
     })),
   ];
+
+  const trendData = bucketByDay(
+    (trendRows ?? []).map((r) => r.created_at),
+    TREND_DAYS,
+  ).map((d) => ({ label: d.label, count: d.count }));
+
+  const typeDataInWindow = types.map((t) => ({
+    type: t,
+    count: trendRows?.filter((r) => r.type === t).length ?? 0,
+  }));
+
+  const typeChartData = typeDataInWindow
+    .filter((c) => c.count > 0)
+    .map((c) => ({
+      label: BRIEF_TYPE_LABEL[c.type],
+      count: c.count,
+      color: `#${BRIEF_TYPE_COLOR_HEX[c.type]}`,
+    }));
 
   return (
     <div className="px-4 py-6 sm:px-6 md:px-8 md:py-10">
@@ -79,6 +121,28 @@ export default async function AdminDashboardPage() {
             </CardContent>
           </Card>
         ))}
+      </div>
+
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:mt-6 lg:grid-cols-[1.6fr_1fr]">
+        <Card>
+          <CardHeader>
+            <CardTitle>Briefs recibidos</CardTitle>
+            <CardDescription>Últimos {TREND_DAYS} días</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <BriefsTrendChart data={trendData} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Por tipo</CardTitle>
+            <CardDescription>Últimos {TREND_DAYS} días</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <BriefsTypeChart data={typeChartData} />
+          </CardContent>
+        </Card>
       </div>
 
       <div className="mt-10">

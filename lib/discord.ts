@@ -1,17 +1,10 @@
 import {
   BRIEF_TYPE_LABEL,
+  BRIEF_TYPE_COLOR_HEX,
   type BriefFormData,
   type BriefType,
 } from "@/app/briefs/_shared/types";
-
-const SITE_URL = "https://takariwa.studio";
-
-const TYPE_COLOR_HEX: Record<BriefType, string> = {
-  web: "281c64", // azul
-  diseno: "ed2b5d", // magenta
-  social: "a01789", // púrpura
-  audiovisual: "f48115", // naranja
-};
+import { SITE_URL } from "@/lib/site";
 
 function hexToDecimal(hex: string): number {
   return parseInt(hex, 16);
@@ -67,7 +60,7 @@ export async function notifyDiscordBrief(
           {
             title: `Nuevo brief de ${label}`,
             description: `**${contacto || "Alguien"}**, de **${empresa}**, llenó el brief de ${label.toLowerCase()}.`,
-            color: hexToDecimal(TYPE_COLOR_HEX[type]),
+            color: hexToDecimal(BRIEF_TYPE_COLOR_HEX[type]),
             fields,
             url: adminUrl,
             footer: { text: "Takariwa Studio, disturbio creativo" },
