@@ -127,6 +127,10 @@
   animation-play-state: paused;
 }
 
+.clients-marquee-track {
+  animation: marquee 32s linear infinite;
+}
+
 @keyframes marquee {
   from {
     transform: translateX(0);
@@ -138,6 +142,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .marquee-track,
+  .clients-marquee-track,
   .headline span,
   .headline span::before,
   .headline span::after {
