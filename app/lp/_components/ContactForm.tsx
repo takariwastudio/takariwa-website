@@ -40,7 +40,7 @@ export default function ContactForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full flex-col items-start gap-2 bg-paper px-4 py-8 md:w-[555px]"
+      className="flex w-full flex-col items-start gap-2 bg-paper px-4 py-8 lg:w-[555px]"
       noValidate
     >
       <h2 className="font-display text-[2.25rem] leading-[0.8] tracking-[-0.03em] text-ink uppercase sm:text-[2.5rem]">

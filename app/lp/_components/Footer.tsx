@@ -4,11 +4,8 @@ import { InstagramIcon, MailIcon, WhatsAppIcon } from "./icons";
 
 export default function Footer() {
   return (
-    <footer
-      id="contacto"
-      className="relative bg-ink px-6 pt-16 pb-8 md:px-12 md:pt-24"
-    >
-      <div className="flex justify-center md:justify-end md:pr-36">
+    <footer className="relative bg-ink px-6 pt-16 pb-8 md:px-12 md:pt-24">
+      <div className="flex justify-center lg:justify-end lg:pr-32">
         <img
           src="/logo.svg"
           alt="Takariwa Studio"
@@ -16,16 +13,16 @@ export default function Footer() {
         />
       </div>
 
-      <div className="mt-12 flex flex-col gap-10 md:mt-16 md:flex-row md:items-start md:gap-16 md:pr-[10%]">
-        <h2 className="font-display text-[2.75rem] leading-[0.92] text-paper sm:text-[3.5rem] md:mt-auto md:text-[5rem] xl:text-[6rem]">
+      <div className="mt-12 flex flex-col gap-10 md:mt-16 lg:flex-row lg:items-start lg:gap-16 lg:pr-[10%]">
+        <h2 className="font-display text-[2.75rem] leading-[0.92] text-paper sm:text-[3.5rem] md:text-[5rem] xl:text-[6rem] lg:mt-auto">
           <span className="block">Que tu marca empiece</span>
           <span className="block">a hacer ruido</span>
         </h2>
 
-        <div className="flex w-full flex-col items-start gap-4 md:w-auto md:items-end">
+        <div className="flex w-full flex-col items-start gap-4 lg:w-auto lg:items-end">
           <ContactForm />
 
-          <div className="flex flex-col items-start gap-3 md:items-end">
+          <div className="flex flex-col items-start gap-3 lg:items-end">
             <p className="font-body text-[10px] text-paper uppercase">
               O si prefieres escríbenos directamente a:
             </p>
@@ -60,7 +57,10 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="mt-16 border-t border-paper/20 pt-4 md:mt-24">
+      <div
+        id="contacto"
+        className="mt-16 border-t border-paper/20 pt-4 md:mt-24"
+      >
         <SocialLinksBar />
       </div>
     </footer>

@@ -80,7 +80,7 @@ export default function SiteNav() {
   return (
     <>
       {/* Desktop: lista siempre visible, junto al logo de cada sección */}
-      <div className="fixed top-9 right-12 z-30 hidden md:block">
+      <div className="fixed top-9 right-12 z-30 hidden lg:block">
         <nav aria-label="Navegación principal">
           <NavList
             prefix={prefix}
@@ -90,8 +90,8 @@ export default function SiteNav() {
         </nav>
       </div>
 
-      {/* Mobile: el favicon siempre acompaña; al tocarlo despliega el menú */}
-      <div className="fixed top-6 right-6 z-30 md:hidden">
+      {/* Mobile/tablet: el favicon siempre acompaña; al tocarlo despliega el menú */}
+      <div className="fixed top-6 right-6 z-30 lg:hidden">
         <button
           type="button"
           onClick={() => setIsOpen((open) => !open)}

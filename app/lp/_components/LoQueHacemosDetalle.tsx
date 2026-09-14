@@ -3,14 +3,14 @@ import { CATEGORY_COLORS } from "@/lib/projects";
 
 export default function LoQueHacemosDetalle() {
   return (
-    <section className="flex min-h-dvh flex-col justify-center bg-ink px-6 py-20 md:justify-start md:px-12 md:pt-[331px] md:pb-24">
-      <div className="flex flex-col gap-8 md:flex-row md:items-end md:gap-12">
-        <h2 className="shrink-0 font-display text-[2.75rem] leading-[0.92] text-paper sm:text-[3.5rem] md:text-[5rem] xl:text-[6rem]">
+    <section className="flex flex-col justify-center bg-ink px-6 py-20 md:min-h-dvh md:justify-start md:px-12 md:pt-[331px] md:pb-24">
+      <div className="flex flex-col gap-10 md:gap-14">
+        <h2 className="font-display text-[2.75rem] leading-[0.92] text-paper sm:text-[3.5rem] md:text-[5rem] xl:text-[6rem]">
           <span className="block">Si manguareamos mucho explicando</span>
           <span className="block">hacemos esto:</span>
         </h2>
 
-        <div className="grid grid-cols-1 gap-8 md:grid-cols-3 md:gap-10 md:pb-3">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-6 lg:gap-10">
           {SERVICE_CATEGORIES.map((category) => (
             <div key={category.key}>
               <p

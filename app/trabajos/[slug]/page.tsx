@@ -31,8 +31,8 @@ export default async function ProjectDetailPage({
 
       {/* mt generoso: el nav fijo no tiene fondo, así que el contenido
       necesita despejarlo en vez de arrancar pegado arriba */}
-      <div className="mt-10 flex flex-col gap-6 md:mt-36 md:flex-row md:items-start md:justify-between md:gap-10">
-        <h1 className="min-w-0 font-display text-[3rem] leading-[0.85] break-words text-paper sm:text-[4rem] md:text-[6rem] xl:text-[7rem]">
+      <div className="mt-10 flex flex-col gap-6 md:mt-36 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
+        <h1 className="min-w-0 font-display text-[3rem] leading-[0.85] break-words text-paper sm:text-[4rem] lg:text-[6rem] xl:text-[7rem]">
           {project.title}
         </h1>
 
@@ -40,7 +40,7 @@ export default async function ProjectDetailPage({
         <img
           src={project.hero_image_url}
           alt={project.title}
-          className="aspect-[681/354] w-full shrink-0 bg-paper object-cover md:w-[56%]"
+          className="aspect-[681/354] w-full shrink-0 bg-paper object-cover lg:w-[56%]"
         />
       </div>
 

@@ -16,7 +16,7 @@ export default function Hero() {
       />
       <div className="absolute inset-0 bg-ink/60" />
 
-      <header className="relative flex justify-center md:justify-end md:pr-25">
+      <header className="relative flex justify-center lg:justify-end lg:pr-32">
         <img
           src="/logo.svg"
           alt="Takariwa Studio"
@@ -27,7 +27,7 @@ export default function Hero() {
       <div className="relative flex flex-1 flex-col justify-end gap-6 pt-16 md:flex-row md:items-end md:justify-between md:gap-10 md:pb-8">
         <h1 className="font-display text-[2.75rem] leading-[0.92] text-paper sm:text-[3.5rem] md:text-[5rem] xl:text-[6rem] xl:leading-[0.92]">
           <span className="block">Más que un estudio.</span>
-          <span className="block">Somos lo que necesitas</span>
+          <span className="block">Somos los creativos que necesitas.</span>
         </h1>
 
         <p className="max-w-xs font-body text-sm leading-snug text-paper uppercase md:pb-2 md:text-base">

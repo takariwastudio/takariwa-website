@@ -48,11 +48,12 @@ export const SERVICE_CATEGORIES: ServiceCategory[] = [
       "Video para lanzamientos",
       "Guionización y storytelling",
       "Dirección creativa",
-      "Edición de video y colorización",
+      "Edición y corrección de color de video",
       "Diseño sonoro",
       "Fotografía de producto",
       "Retrato corporativo",
       "Pauta para eventos",
+      "Motion Graphics",
     ],
   },
 ];
