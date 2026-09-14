@@ -19,6 +19,7 @@ type ProjectRow = {
   paragraph_1: string;
   paragraph_2: string;
   services: string[];
+  video_urls: string[];
 };
 
 type ProjectImageRow = {
@@ -36,7 +37,9 @@ export default async function AdminEditProjectPage({
 
   const { data: project, error } = await supabase
     .from("projects")
-    .select("id, title, tag, category, paragraph_1, paragraph_2, services")
+    .select(
+      "id, title, tag, category, paragraph_1, paragraph_2, services, video_urls",
+    )
     .eq("id", id)
     .single<ProjectRow>();
 
@@ -75,6 +78,7 @@ export default async function AdminEditProjectPage({
           paragraph1={project.paragraph_1}
           paragraph2={project.paragraph_2}
           services={project.services}
+          videoUrls={project.video_urls}
         />
 
         <GalleryManager projectId={project.id} images={images ?? []} />

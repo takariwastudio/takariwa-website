@@ -16,6 +16,7 @@ export type ProjectDetail = ProjectSummary & {
   paragraph_1: string;
   paragraph_2: string;
   services: string[];
+  video_urls: string[];
   images: string[];
 };
 
@@ -61,7 +62,7 @@ export async function getProjectBySlug(
   const { data: project, error } = await supabase
     .from("projects")
     .select(
-      "id, slug, title, tag, category, hero_image_url, paragraph_1, paragraph_2, services",
+      "id, slug, title, tag, category, hero_image_url, paragraph_1, paragraph_2, services, video_urls",
     )
     .eq("slug", slug)
     .single();

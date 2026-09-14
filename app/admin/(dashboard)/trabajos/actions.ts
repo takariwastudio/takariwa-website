@@ -34,6 +34,13 @@ function slugifyFileName(name: string) {
     .replace(/^-|-$/g, "");
 }
 
+function parseLines(raw: string) {
+  return raw
+    .split("\n")
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0);
+}
+
 async function uniqueSlug(
   supabase: ReturnType<typeof createServerSupabase>,
   base: string,
@@ -61,20 +68,14 @@ function parseCategory(value: unknown): ProjectCategory | null {
     : null;
 }
 
-function parseServices(raw: string) {
-  return raw
-    .split("\n")
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0);
-}
-
 export async function createProject(formData: FormData): Promise<ActionResult> {
   const title = formData.get("title")?.toString().trim() ?? "";
   const tag = formData.get("tag")?.toString().trim() ?? "";
   const category = parseCategory(formData.get("category")?.toString());
   const paragraph1 = formData.get("paragraph_1")?.toString().trim() ?? "";
   const paragraph2 = formData.get("paragraph_2")?.toString().trim() ?? "";
-  const services = parseServices(formData.get("services")?.toString() ?? "");
+  const services = parseLines(formData.get("services")?.toString() ?? "");
+  const videoUrls = parseLines(formData.get("video_urls")?.toString() ?? "");
   const hero = formData.get("hero");
 
   if (!title || !tag || !category) {
@@ -115,6 +116,7 @@ export async function createProject(formData: FormData): Promise<ActionResult> {
     paragraph_1: paragraph1,
     paragraph_2: paragraph2,
     services,
+    video_urls: videoUrls,
   });
 
   if (insertError) {
@@ -139,7 +141,8 @@ export async function updateProject(
   const category = parseCategory(formData.get("category")?.toString());
   const paragraph1 = formData.get("paragraph_1")?.toString().trim() ?? "";
   const paragraph2 = formData.get("paragraph_2")?.toString().trim() ?? "";
-  const services = parseServices(formData.get("services")?.toString() ?? "");
+  const services = parseLines(formData.get("services")?.toString() ?? "");
+  const videoUrls = parseLines(formData.get("video_urls")?.toString() ?? "");
   const hero = formData.get("hero");
 
   if (!title || !tag || !category) {
@@ -155,9 +158,9 @@ export async function updateProject(
     paragraph_1: paragraph1,
     paragraph_2: paragraph2,
     services,
+    video_urls: videoUrls,
   };
 
-  // El hero es opcional al editar — solo se reemplaza si suben un archivo nuevo.
   if (hero instanceof File && hero.size > 0) {
     const { data: existing } = await supabase
       .from("projects")
@@ -219,8 +222,6 @@ export async function deleteProject(id: string): Promise<ActionResult> {
     .select("image_url")
     .eq("project_id", id);
 
-  // El delete del proyecto se lleva las filas de project_images con él
-  // (on delete cascade), pero los archivos en Storage no se borran solos.
   const { error } = await supabase.from("projects").delete().eq("id", id);
 
   if (error) {
@@ -284,8 +285,6 @@ export async function addProjectImages(
 
     if (uploadError) {
       console.error("Error subiendo imagen de galería:", uploadError);
-      // Limpia lo que ya se alcanzó a subir en este lote antes de salir,
-      // para no dejar archivos huérfanos de una subida a medias.
       if (uploadedPaths.length > 0) {
         await supabase.storage.from("project-images").remove(uploadedPaths);
       }

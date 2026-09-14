@@ -11,6 +11,7 @@ type Status = "idle" | "submitting" | "error";
 export function CreateProjectForm() {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [category, setCategory] = useState<ProjectCategory | "">("");
   const formRef = useRef<HTMLFormElement>(null);
   const servicesRef = useRef<HTMLTextAreaElement>(null);
 
@@ -24,6 +25,7 @@ export function CreateProjectForm() {
 
     if (result.ok) {
       setStatus("idle");
+      setCategory("");
       formRef.current?.reset();
     } else {
       setStatus("error");
@@ -31,12 +33,12 @@ export function CreateProjectForm() {
     }
   }
 
-  // Solo rellena si el campo sigue vacío — no pisa lo que ya hayan escrito.
-  function handleCategoryChange(category: ProjectCategory | "") {
+  function handleCategoryChange(newCategory: ProjectCategory | "") {
+    setCategory(newCategory);
     if (!servicesRef.current || servicesRef.current.value.trim() !== "") {
       return;
     }
-    const defaults = SERVICE_CATEGORIES.find((c) => c.key === category);
+    const defaults = SERVICE_CATEGORIES.find((c) => c.key === newCategory);
     if (defaults) {
       servicesRef.current.value = defaults.items.join("\n");
     }
@@ -180,6 +182,27 @@ export function CreateProjectForm() {
             className="w-full rounded-lg border border-border bg-background px-3 py-2 font-body text-sm text-foreground outline-none focus:border-primary"
           />
         </div>
+
+        {category === "audiovisual" && (
+          <div className="sm:col-span-2">
+            <label
+              htmlFor="video_urls"
+              className="mb-1 block font-body text-xs font-medium text-muted-foreground"
+            >
+              Links de video{" "}
+              <span className="text-muted-foreground/70">
+                (uno por línea — YouTube, Vimeo, etc.)
+              </span>
+            </label>
+            <textarea
+              id="video_urls"
+              name="video_urls"
+              rows={4}
+              disabled={status === "submitting"}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 font-body text-sm text-foreground outline-none focus:border-primary"
+            />
+          </div>
+        )}
       </div>
 
       <p className="font-body text-xs text-muted-foreground">

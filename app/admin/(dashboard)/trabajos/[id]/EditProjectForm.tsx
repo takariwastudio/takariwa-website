@@ -15,6 +15,7 @@ export function EditProjectForm({
   paragraph1,
   paragraph2,
   services,
+  videoUrls,
 }: {
   id: string;
   title: string;
@@ -23,9 +24,12 @@ export function EditProjectForm({
   paragraph1: string;
   paragraph2: string;
   services: string[];
+  videoUrls: string[];
 }) {
   const [status, setStatus] = useState<Status>("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [selectedCategory, setSelectedCategory] =
+    useState<ProjectCategory>(category);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -97,6 +101,9 @@ export function EditProjectForm({
             name="category"
             required
             defaultValue={category}
+            onChange={(event) =>
+              setSelectedCategory(event.target.value as ProjectCategory)
+            }
             disabled={status === "submitting"}
             className="w-full rounded-lg border border-border bg-background px-3 py-2 font-body text-sm text-foreground outline-none focus:border-primary"
           >
@@ -177,6 +184,28 @@ export function EditProjectForm({
             className="w-full rounded-lg border border-border bg-background px-3 py-2 font-body text-sm text-foreground outline-none focus:border-primary"
           />
         </div>
+
+        {selectedCategory === "audiovisual" && (
+          <div className="sm:col-span-2">
+            <label
+              htmlFor="video_urls"
+              className="mb-1 block font-body text-xs font-medium text-muted-foreground"
+            >
+              Links de video{" "}
+              <span className="text-muted-foreground/70">
+                (uno por línea — YouTube, Vimeo, etc.)
+              </span>
+            </label>
+            <textarea
+              id="video_urls"
+              name="video_urls"
+              rows={4}
+              defaultValue={videoUrls.join("\n")}
+              disabled={status === "submitting"}
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 font-body text-sm text-foreground outline-none focus:border-primary"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-3">
