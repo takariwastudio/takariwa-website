@@ -1,9 +1,3 @@
-/**
- * Estados del brief — nombres con la voz de Takariwa en vez de genéricos de
- * CRM. "En ejecución" e "Impacto" además son un guiño directo a dos pasos de
- * la metodología real (La Excavación → La Ruptura → La Ejecución → El
- * Impacto), no nombres inventados sueltos.
- */
 export const STATUSES = [
   "nuevo",
   "en_evaluacion",
@@ -26,14 +20,14 @@ export type BadgeVariant =
   | "purple";
 
 export const STATUS_LABEL: Record<BriefStatus, string> = {
-  nuevo: "Aterrizó",
-  en_evaluacion: "Bajo la lupa",
-  propuesta_enviada: "Bala en el aire",
-  propuesta_rechazada: "Se apagó",
-  propuesta_aceptada: "Luz verde",
-  trabajando: "En ejecución",
-  entregado: "Impacto",
-  cancelado: "Abortado",
+  nuevo: "Nuevo",
+  en_evaluacion: "En Evaluación",
+  propuesta_enviada: "Propuesta Enviada",
+  propuesta_rechazada: "Propuesta Rechazada",
+  propuesta_aceptada: "Propuesta Aceptada",
+  trabajando: "Trabajando",
+  entregado: "Entregado",
+  cancelado: "Cancelado",
 };
 
 export const STATUS_VARIANT: Record<BriefStatus, BadgeVariant> = {
