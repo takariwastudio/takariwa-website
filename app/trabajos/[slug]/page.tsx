@@ -8,6 +8,8 @@ import {
 import SiteNav from "../../_components/SiteNav";
 import SocialLinksBar from "../../_components/SocialLinksBar";
 
+export const dynamic = "force-dynamic";
+
 export default async function ProjectDetailPage({
   params,
 }: {
