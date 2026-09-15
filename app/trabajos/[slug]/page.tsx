@@ -29,8 +29,6 @@ export default async function ProjectDetailPage({
         &lt; Volver atrás
       </Link>
 
-      {/* mt generoso: el nav fijo no tiene fondo, así que el contenido
-      necesita despejarlo en vez de arrancar pegado arriba */}
       <div className="mt-10 flex flex-col gap-6 md:mt-36 lg:flex-row lg:items-start lg:justify-between lg:gap-10">
         <h1 className="min-w-0 font-display text-[3rem] leading-[0.85] break-words text-paper sm:text-[4rem] lg:text-[6rem] xl:text-[7rem]">
           {project.title}

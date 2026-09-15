@@ -9,7 +9,7 @@ const baiJamjuree = Bai_Jamjuree({
 });
 
 export const metadata: Metadata = {
-  title: "Todos los trabajos | Takariwa Studio",
+  title: "Trabajos | Takariwa Studio",
   robots: {
     index: false,
     follow: false,
