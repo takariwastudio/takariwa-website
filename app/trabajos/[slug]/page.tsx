@@ -6,6 +6,7 @@ import {
   CATEGORY_LABELS,
   CATEGORY_COLORS,
 } from "@/lib/projects";
+import { toVideoEmbed } from "@/lib/video-embed";
 import SiteFooter from "../../_components/SiteFooter";
 import SiteNav from "../../_components/SiteNav";
 
@@ -53,6 +54,38 @@ export default async function ProjectDetailPage({
         <p className="mt-10 font-body text-base leading-snug text-paper uppercase md:mt-16 md:text-2xl md:leading-[0.95]">
           {project.paragraph_1}
         </p>
+      )}
+
+      {project.video_urls.length > 0 && (
+        <div className="mt-10 flex flex-col gap-6 md:mt-16">
+          {project.video_urls.map((url) => {
+            const embed = toVideoEmbed(url);
+            if (!embed) return null;
+
+            return (
+              <div
+                key={url}
+                className="relative aspect-video w-full overflow-hidden bg-paper"
+              >
+                {embed.type === "iframe" ? (
+                  <iframe
+                    src={embed.src}
+                    title={project.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                    className="absolute inset-0 h-full w-full"
+                  />
+                ) : (
+                  <video
+                    src={embed.src}
+                    controls
+                    className="absolute inset-0 h-full w-full object-cover"
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
       )}
 
       {/* Masonry de 3 columnas — tantas imágenes como el admin haya subido

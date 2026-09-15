@@ -45,26 +45,26 @@ export default function TrabajosList({
         ))}
       </nav>
 
-      <div className="mt-8 flex flex-col gap-3 md:mt-10">
+      <div className="mt-8 columns-1 gap-4 sm:columns-2 md:mt-10 md:columns-3 md:gap-6">
         {visibleProjects.map((project) => (
           <Link
             key={project.id}
             href={`/trabajos/${project.slug}`}
-            className="group relative flex h-24 items-end justify-end overflow-hidden bg-paper p-3 transition-opacity hover:opacity-90 md:h-[102px]"
+            className="group relative mb-4 block aspect-[4/3] w-full break-inside-avoid overflow-hidden bg-paper transition-opacity hover:opacity-90 md:mb-6"
           >
             <Image
               src={project.hero_image_url}
               alt={project.title}
               fill
-              sizes="(max-width: 768px) 100vw, 100vw"
-              className="object-cover"
+              sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
             />
             <span
               aria-hidden="true"
-              className="absolute inset-x-0 bottom-0 h-12 bg-gradient-to-t from-ink/80 to-transparent"
+              className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-ink/90 to-transparent"
             />
             <span
-              className="relative font-body text-[10px] uppercase"
+              className="absolute inset-x-0 bottom-0 p-3 font-body text-[10px] leading-snug uppercase"
               style={{ color: CATEGORY_COLORS[project.category] }}
             >
               {project.tag} | {project.title} &gt;
