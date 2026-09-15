@@ -50,7 +50,7 @@ export default function SiteNav() {
   const pathname = usePathname();
   // En /lp los anchors son de la misma página ("#home"). En cualquier otra
   // ruta (como /trabajos) apuntan de vuelta al homepage ("/lp#home").
-  const prefix = pathname === "/lp" ? "" : "/lp";
+  const prefix = pathname === "/" ? "" : "/";
 
   const [activeId, setActiveId] = useState("home");
   const [isOpen, setIsOpen] = useState(false);
@@ -100,7 +100,14 @@ export default function SiteNav() {
           aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
           className="block p-1"
         >
-          <Image src="/favicon.svg" alt="" width={32} height={32} unoptimized className="h-8 w-8" />
+          <Image
+            src="/favicon.svg"
+            alt=""
+            width={32}
+            height={32}
+            unoptimized
+            className="h-8 w-8"
+          />
         </button>
 
         {isOpen && (

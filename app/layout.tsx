@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Bebas_Neue, Jost } from "next/font/google";
+import { Bebas_Neue, Jost, Bai_Jamjuree } from "next/font/google";
 import "./globals.css";
 
 const bebasNeue = Bebas_Neue({
@@ -16,10 +16,17 @@ const jost = Jost({
   display: "swap",
 });
 
+const baiJamjuree = Bai_Jamjuree({
+  weight: ["400", "500", "600"],
+  subsets: ["latin"],
+  variable: "--font-bai-raw",
+  display: "swap",
+});
+
 const SITE_URL = "https://takariwa.studio";
-const TITLE = "Takariwa Studio | Próximamente";
+const TITLE = "Takariwa Studio";
 const DESCRIPTION =
-  "Estudio creativo en Venezuela. Estamos armando algo. Mientras tanto, escríbenos y déjanos hacer ruido creativo.";
+  "Estudio creativo en Venezuela. Construimos marcas, plataformas y contenido que no piden permiso. Con carácter, con criterio y desde Maracay para donde sea necesario.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
@@ -30,6 +37,7 @@ export const metadata: Metadata = {
     "estudio creativo Venezuela",
     "diseño web Venezuela",
     "desarrollo web Venezuela",
+    "branding Venezuela",
     "disturbio creativo",
   ],
   alternates: {
@@ -55,7 +63,7 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Takariwa Studio | Próximamente",
+        alt: "Takariwa Studio",
       },
     ],
   },
@@ -93,9 +101,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    <html lang="es" className="scroll-smooth">
       <body
-        className={`${bebasNeue.variable} ${jost.variable} font-body bg-ink text-paper min-h-dvh overflow-x-hidden bg-cover bg-center bg-no-repeat bg-[url('/texture-bg.svg')] md:bg-fixed`}
+        className={`${bebasNeue.variable} ${jost.variable} ${baiJamjuree.variable} font-body bg-ink text-paper min-h-dvh overflow-x-hidden`}
       >
         {children}
         <script

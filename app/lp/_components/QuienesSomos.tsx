@@ -17,7 +17,7 @@ export default function QuienesSomos() {
           aria-hidden="true"
         >
           <Image
-            src="/quienes-somos.webp"
+            src="/takariwa-studio-team-1.webp"
             alt="Equipo de Takariwa"
             fill
             className="object-cover"
