@@ -13,8 +13,18 @@ export async function proxy(req: NextRequest) {
   }
 
   const secret = process.env.ADMIN_SESSION_SECRET;
+  // Fail-closed: sin secret o muy corto, no permitir bypass silencioso
+  if (!secret || secret.length < 32) {
+    console.error(
+      "ADMIN_SESSION_SECRET faltante o demasiado corto (<32 chars) — bloqueando acceso a /admin",
+    );
+    const loginUrl = new URL("/admin/login", req.url);
+    loginUrl.searchParams.set("next", pathname);
+    return NextResponse.redirect(loginUrl);
+  }
+
   const token = req.cookies.get("admin_session")?.value;
-  const valid = secret ? await verifySessionToken(token, secret) : false;
+  const valid = await verifySessionToken(token, secret);
 
   if (!valid) {
     const loginUrl = new URL("/admin/login", req.url);

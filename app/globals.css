@@ -64,31 +64,13 @@
   display: inline-block;
 }
 
-@media (hover: hover) {
-  /* .headline span:hover {
-    animation: glitch 420ms steps(2, jump-none) infinite;
-  } */
-}
-
+/* Glitch desactivado — mantener keyframes por si se reactiva con clase .glitch-active */
 .headline span::before,
 .headline span::after {
   content: attr(data-text);
   position: absolute;
   inset: 0;
   opacity: 0;
-}
-
-@media (hover: hover) {
-  /* .headline span:hover::before {
-    opacity: 0.85;
-    color: var(--color-magenta);
-    animation: glitch-shift-1 420ms steps(2, jump-none) infinite;
-  }
-  .headline span:hover::after {
-    opacity: 0.85;
-    color: var(--color-blue);
-    animation: glitch-shift-2 420ms steps(2, jump-none) infinite;
-  } */
 }
 
 @keyframes glitch {

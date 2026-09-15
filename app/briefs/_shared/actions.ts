@@ -1,9 +1,18 @@
 "use server";
 
 import { after } from "next/server";
+import { headers } from "next/headers";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { notifyNewBrief } from "@/lib/email";
 import { notifyDiscordBrief } from "@/lib/discord";
+import { checkRateLimit } from "@/lib/rate-limit";
+import {
+  isValidEmail,
+  isHoneypotTriggered,
+  validateBriefPayloadSize,
+  validateContacto,
+  validateEmpresa,
+} from "@/lib/validation";
 import type { BriefFormData, BriefType } from "./types";
 
 export interface SubmitResult {
@@ -15,17 +24,41 @@ export async function submitBrief(
   type: BriefType,
   data: BriefFormData,
 ): Promise<SubmitResult> {
+  if (isHoneypotTriggered(data as Record<string, unknown>)) {
+    console.warn("Honeypot triggered en submitBrief", { type });
+    return { ok: true };
+  }
+
+  try {
+    const hdrs = await headers();
+    const ip =
+      hdrs.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+      hdrs.get("x-real-ip") ||
+      "unknown";
+    const rl = checkRateLimit(`brief:${type}`, ip, 5, 10 * 60 * 1000);
+    if (!rl.allowed) {
+      return {
+        ok: false,
+        error: "Demasiados envíos. Intenta de nuevo en unos minutos.",
+      };
+    }
+  } catch {
+    // best-effort
+  }
+
   const empresa = String(data.nombre_marca ?? data.empresa ?? "").trim();
   const contactoNombre = String(data.responsable ?? data.contacto ?? "").trim();
   const email = String(data.email ?? "").trim();
 
-  if (!empresa) {
-    return { ok: false, error: "Falta el nombre de la marca/empresa." };
-  }
-
-  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+  const empresaErr = validateEmpresa(empresa);
+  if (empresaErr) return { ok: false, error: empresaErr };
+  const contactoErr = validateContacto(contactoNombre);
+  if (contactoErr) return { ok: false, error: contactoErr };
+  if (email && !isValidEmail(email)) {
     return { ok: false, error: "El correo electrónico no parece válido." };
   }
+  const sizeErr = validateBriefPayloadSize(data);
+  if (sizeErr) return { ok: false, error: sizeErr };
 
   const supabase = createServerSupabase();
 

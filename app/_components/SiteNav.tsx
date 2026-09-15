@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -99,7 +100,7 @@ export default function SiteNav() {
           aria-label={isOpen ? "Cerrar menú" : "Abrir menú"}
           className="block p-1"
         >
-          <img src="/favicon.svg" alt="" className="h-8 w-8" />
+          <Image src="/favicon.svg" alt="" width={32} height={32} unoptimized className="h-8 w-8" />
         </button>
 
         {isOpen && (

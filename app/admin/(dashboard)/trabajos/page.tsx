@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { CreateProjectForm } from "./CreateProjectForm";
 import { DeleteProjectButton } from "./DeleteProjectButton";
@@ -55,10 +56,11 @@ export default async function AdminTrabajosPage() {
               href={`/admin/trabajos/${project.id}`}
               className="flex min-w-0 flex-1 items-center gap-4"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
+              <Image
                 src={project.hero_image_url}
                 alt={project.title}
+                width={96}
+                height={56}
                 className="h-14 w-24 shrink-0 rounded bg-background object-cover"
               />
               <div className="min-w-0">

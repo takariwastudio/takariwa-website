@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useActionState } from "react";
 import { useSearchParams } from "next/navigation";
 import { loginAdmin, type LoginState } from "./actions";
@@ -16,7 +17,7 @@ export function LoginForm() {
       action={formAction}
       className="w-full max-w-sm rounded-xl border border-border bg-card p-8"
     >
-      <img src="/logo.svg" alt="Takariwa Studio" className="mb-6 h-9 w-auto" />
+      <Image src="/logo.svg" alt="Takariwa Studio" width={160} height={40} unoptimized className="mb-6 h-9 w-auto" />
       <h1 className="font-display mb-1 text-2xl text-foreground">Admin</h1>
       <p className="font-body mb-6 text-sm text-muted-foreground">
         Ingresa para gestionar los briefs.

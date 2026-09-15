@@ -25,25 +25,34 @@ const COLS = [
   { width: "20%", label: "Estado" },
 ];
 
+const PAGE_SIZE = 20;
+
 export default async function AdminBriefListPage({
   searchParams,
 }: {
-  searchParams: Promise<{ type?: string }>;
+  searchParams: Promise<{ type?: string; page?: string }>;
 }) {
-  const { type } = await searchParams;
+  const { type, page: pageRaw } = await searchParams;
   const filter = ALL_TYPES.includes(type as BriefType)
     ? (type as BriefType)
     : "all";
+  const page = Math.max(1, parseInt(pageRaw ?? "1", 10) || 1);
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE - 1;
 
   const supabase = createServerSupabase();
   let query = supabase
     .from("briefs")
-    .select("id, created_at, type, empresa, contacto, email, status")
-    .order("created_at", { ascending: false });
+    .select("id, created_at, type, empresa, contacto, email, status", {
+      count: "exact",
+    })
+    .order("created_at", { ascending: false })
+    .range(from, to);
 
   if (filter !== "all") query = query.eq("type", filter);
 
-  const { data: briefs, error } = await query;
+  const { data: briefs, error, count } = await query;
+  const totalPages = Math.max(1, Math.ceil((count ?? 0) / PAGE_SIZE));
 
   const tabs: { label: string; value: "all" | BriefType }[] = [
     { label: "Todos", value: "all" },
@@ -189,6 +198,40 @@ export default async function AdminBriefListPage({
               </tbody>
             </table>
           </div>
+
+          {totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-between">
+              <p className="font-body text-xs text-muted-foreground">
+                Página {page} de {totalPages} · {count} briefs
+              </p>
+              <div className="flex gap-2">
+                {page > 1 ? (
+                  <Link
+                    href={`/admin/briefs${filter !== "all" ? `?type=${filter}&page=${page - 1}` : `?page=${page - 1}`}`}
+                    className="rounded-full border border-border px-4 py-1.5 font-body text-sm text-foreground hover:bg-muted"
+                  >
+                    ← Anterior
+                  </Link>
+                ) : (
+                  <span className="rounded-full border border-border/50 px-4 py-1.5 font-body text-sm text-muted-foreground/50">
+                    ← Anterior
+                  </span>
+                )}
+                {page < totalPages ? (
+                  <Link
+                    href={`/admin/briefs${filter !== "all" ? `?type=${filter}&page=${page + 1}` : `?page=${page + 1}`}`}
+                    className="rounded-full border border-border px-4 py-1.5 font-body text-sm text-foreground hover:bg-muted"
+                  >
+                    Siguiente →
+                  </Link>
+                ) : (
+                  <span className="rounded-full border border-border/50 px-4 py-1.5 font-body text-sm text-muted-foreground/50">
+                    Siguiente →
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

@@ -189,6 +189,8 @@ function LinkedInIcon() {
   );
 }
 
+// SOCIAL_LINKS se mantiene para uso futuro en footer del brief (hoy comentado)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const SOCIAL_LINKS = [
   { label: "WhatsApp", href: "https://wa.me/584226340416", Icon: WhatsAppIcon },
   { label: "Correo", href: "mailto:hola@takariwa.studio", Icon: MailIcon },
@@ -229,6 +231,7 @@ export default function BriefForm({
   >("idle");
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
+  const [honeypot, setHoneypot] = useState("");
 
   const isIntro = qIndex === -1;
   const isReview = qIndex === total;
@@ -322,7 +325,10 @@ export default function BriefForm({
   async function handleSubmit() {
     setStatus("submitting");
     setSubmitError(null);
-    const result = await submitBrief(briefType, data);
+    const payload: BriefFormData = honeypot
+      ? { ...data, website: honeypot }
+      : data;
+    const result = await submitBrief(briefType, payload);
     if (result.ok) {
       setStatus("done");
     } else {
@@ -693,6 +699,19 @@ export default function BriefForm({
                 </motion.section>
               )}
             </AnimatePresence>
+          </div>
+
+          {/* Honeypot anti-spam */}
+          <div className="absolute -left-[9999px] h-0 overflow-hidden" aria-hidden="true">
+            <label htmlFor="hp-website">Website</label>
+            <input
+              id="hp-website"
+              type="text"
+              tabIndex={-1}
+              autoComplete="off"
+              value={honeypot}
+              onChange={(e) => setHoneypot(e.target.value)}
+            />
           </div>
 
           {!isIntro && (

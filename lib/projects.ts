@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 
 export type ProjectCategory = "diseño" | "desarrollo" | "audiovisual";
@@ -36,10 +37,10 @@ export const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "audiovisual", label: "Audiovisuales" },
 ];
 
-// Lectura pública (anon key) — usada tanto por el teaser del home como por
-// /trabajos. Ordenados por fecha de creación: "General" ya puede tomar los
-// últimos 7 directo del final del arreglo.
-export async function getProjects(): Promise<ProjectSummary[]> {
+// Lectura pública (anon key) — con React cache para deduplicar fetches
+// en un mismo render (ej: layout + page piden lo mismo). El admin invalida
+// con revalidatePath("/trabajos") tras mutaciones.
+export const getProjects = cache(async (): Promise<ProjectSummary[]> => {
   const supabase = createBrowserSupabase();
   const { data, error } = await supabase
     .from("projects")
@@ -52,11 +53,11 @@ export async function getProjects(): Promise<ProjectSummary[]> {
   }
 
   return (data ?? []) as ProjectSummary[];
-}
+});
 
-export async function getProjectBySlug(
+export const getProjectBySlug = cache(async (
   slug: string,
-): Promise<ProjectDetail | null> {
+): Promise<ProjectDetail | null> => {
   const supabase = createBrowserSupabase();
 
   const { data: project, error } = await supabase
@@ -86,7 +87,7 @@ export async function getProjectBySlug(
     ...(project as unknown as ProjectDetail),
     images: (images ?? []).map((row) => row.image_url as string),
   };
-}
+});
 
 export const CATEGORY_COLORS: Record<ProjectCategory, string> = {
   diseño: "var(--color-magenta)",

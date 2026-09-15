@@ -1,3 +1,4 @@
+import Image from "next/image";
 import SocialLinksBar from "../../_components/SocialLinksBar";
 
 export default function Hero() {
@@ -17,9 +18,13 @@ export default function Hero() {
       <div className="absolute inset-0 bg-ink/60" />
 
       <header className="relative flex justify-center lg:justify-end lg:pr-32">
-        <img
+        <Image
           src="/logo.svg"
           alt="Takariwa Studio"
+          width={160}
+          height={48}
+          unoptimized
+          priority
           className="h-10 w-auto md:h-14"
         />
       </header>

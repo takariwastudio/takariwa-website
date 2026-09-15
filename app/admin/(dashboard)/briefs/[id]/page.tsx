@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { ArrowLeft } from "lucide-react";
 import { notFound } from "next/navigation";
 import { createServerSupabase } from "@/lib/supabase/server";
@@ -113,10 +114,11 @@ export default async function AdminBriefDetailPage({
                               className="block overflow-hidden rounded-lg border border-border"
                             >
                               {isImageUrl(url) ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img
+                                <Image
                                   src={url}
                                   alt="Referencia"
+                                  width={96}
+                                  height={96}
                                   className="h-24 w-24 object-cover"
                                 />
                               ) : (

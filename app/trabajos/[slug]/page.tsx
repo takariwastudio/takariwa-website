@@ -1,12 +1,13 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   getProjectBySlug,
   CATEGORY_LABELS,
   CATEGORY_COLORS,
 } from "@/lib/projects";
+import SiteFooter from "../../_components/SiteFooter";
 import SiteNav from "../../_components/SiteNav";
-import SocialLinksBar from "../../_components/SocialLinksBar";
 
 export const dynamic = "force-dynamic";
 
@@ -36,12 +37,16 @@ export default async function ProjectDetailPage({
           {project.title}
         </h1>
 
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={project.hero_image_url}
-          alt={project.title}
-          className="aspect-[681/354] w-full shrink-0 bg-paper object-cover lg:w-[56%]"
-        />
+        <div className="relative aspect-[681/354] w-full shrink-0 overflow-hidden bg-paper lg:w-[56%]">
+          <Image
+            src={project.hero_image_url}
+            alt={project.title}
+            fill
+            sizes="(max-width: 1024px) 100vw, 56vw"
+            className="object-cover"
+            priority
+          />
+        </div>
       </div>
 
       {project.paragraph_1 && (
@@ -55,13 +60,19 @@ export default async function ProjectDetailPage({
       {project.images.length > 0 && (
         <div className="mt-10 columns-1 gap-4 sm:columns-2 md:mt-16 md:columns-3 md:gap-6">
           {project.images.map((url, index) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
+            <div
               key={url}
-              src={url}
-              alt={`${project.title} — imagen ${index + 1}`}
-              className="mb-4 w-full break-inside-avoid bg-paper md:mb-6"
-            />
+              className="relative mb-4 w-full break-inside-avoid overflow-hidden bg-paper md:mb-6"
+            >
+              <Image
+                src={url}
+                alt={`${project.title} — imagen ${index + 1}`}
+                width={800}
+                height={600}
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+                className="h-auto w-full object-cover"
+              />
+            </div>
           ))}
         </div>
       )}
@@ -93,9 +104,7 @@ export default async function ProjectDetailPage({
         </div>
       )}
 
-      <div className="mt-16 border-t border-paper/20 pt-4 md:mt-24">
-        <SocialLinksBar />
-      </div>
+      <SiteFooter />
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import Image from "next/image";
 
 type MarqueeItem = {
   text: string;
@@ -151,17 +152,25 @@ export default function Home() {
         className="fixed inset-0 z-0 overflow-hidden pointer-events-none"
         aria-hidden="true"
       >
-        <img
+        <Image
           src="/logo-fondo.svg"
           alt=""
-          className="absolute -bottom-[18%] -right-[32%] w-[130vw] max-w-none opacity-90 md:-bottom-[14%] md:-right-[12%] md:w-[62vw] xl:-bottom-[20%] xl:-right-[6%] xl:w-[48vw]"
+          fill
+          unoptimized
+          priority
+          className="absolute !h-auto !w-[130vw] max-w-none object-contain opacity-90 md:!w-[62vw] xl:!w-[48vw]"
+          style={{ top: "auto", bottom: "-18%", right: "-32%", left: "auto" }}
         />
       </div>
 
       <header className="relative z-20 flex shrink-0 justify-center pt-4 md:pt-6">
-        <img
+        <Image
           src="/logo.svg"
           alt="Takariwa Studio"
+          width={200}
+          height={60}
+          unoptimized
+          priority
           className="h-8 w-auto md:h-20"
         />
       </header>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   CATEGORY_COLORS,
   FILTERS,
@@ -63,11 +64,12 @@ export default function TrabajosGrid({
             href={`/trabajos/${project.slug}`}
             className={`group relative flex h-[220px] items-end justify-end overflow-hidden bg-paper p-3 transition-opacity hover:opacity-90 md:h-full ${BENTO_SPANS[index % BENTO_SPANS.length]}`}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
+            <Image
               src={project.hero_image_url}
-              alt=""
-              className="absolute inset-0 h-full w-full object-cover"
+              alt={project.title}
+              fill
+              sizes="(max-width: 768px) 100vw, 33vw"
+              className="object-cover"
             />
             <span
               aria-hidden="true"

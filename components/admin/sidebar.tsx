@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -66,7 +67,7 @@ export function AdminSidebar() {
       {/* Barra superior — solo en mobile/tablet angosto. En md+ el sidebar
           normal se encarga de todo y esta barra desaparece. */}
       <header className="sticky top-0 z-30 flex items-center justify-between border-b border-border bg-background px-4 py-3 md:hidden">
-        <img src="/logo.svg" alt="Takariwa Studio" className="h-7 w-auto" />
+        <Image src="/logo.svg" alt="Takariwa Studio" width={120} height={28} unoptimized className="h-7 w-auto" />
         <button
           type="button"
           onClick={() => setMobileOpen(true)}
@@ -104,9 +105,12 @@ export function AdminSidebar() {
             collapsed && "md:justify-center md:px-2",
           )}
         >
-          <img
+          <Image
             src="/logo.svg"
             alt="Takariwa Studio"
+            width={140}
+            height={36}
+            unoptimized
             className={cn("h-9 w-auto", collapsed && "md:hidden")}
           />
           {/* Cerrar cajón — solo mobile */}

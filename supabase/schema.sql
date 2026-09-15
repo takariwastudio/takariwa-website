@@ -153,3 +153,6 @@ create policy "Las imágenes de proyectos son públicas para lectura"
 -- era fija por categoría (misma lista para todo "diseño"), ahora es propia
 -- de cada proyecto, cargada a mano desde el admin.
 alter table projects add column if not exists services text[] not null default '{}';
+-- Links de video (YouTube/Vimeo) — solo relevante para categoría audiovisual,
+-- pero vive en la misma tabla para no complejizar el modelo.
+alter table projects add column if not exists video_urls text[] not null default '{}';

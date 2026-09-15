@@ -1,14 +1,18 @@
+import Image from "next/image";
+import { SITE_RIF } from "@/lib/site";
 import ContactForm from "./ContactForm";
-import SocialLinksBar from "../../_components/SocialLinksBar";
 import { InstagramIcon, MailIcon, WhatsAppIcon } from "./icons";
 
 export default function Footer() {
   return (
     <footer className="relative bg-ink px-6 pt-16 pb-8 md:px-12 md:pt-24">
       <div className="flex justify-center lg:justify-end lg:pr-32">
-        <img
+        <Image
           src="/logo.svg"
           alt="Takariwa Studio"
+          width={160}
+          height={48}
+          unoptimized
           className="h-10 w-auto md:h-14"
         />
       </div>
@@ -59,9 +63,24 @@ export default function Footer() {
 
       <div
         id="contacto"
-        className="mt-16 border-t border-paper/20 pt-4 md:mt-24"
+        className="mt-16 flex flex-col gap-4 border-t border-paper/20 pt-4 md:mt-24 md:flex-row md:items-center md:justify-between"
       >
-        <SocialLinksBar />
+        <div className="font-body text-center text-[10px] leading-tight text-paper uppercase md:flex-1 md:text-left">
+          <p>Takariwa • Estudio creativo</p>
+          <p>Maracay - Aragua</p>
+        </div>
+        <p className="font-body order-first text-center text-[10px] tracking-[0.14em] text-paper/60 uppercase md:order-none md:flex-none">
+          RIF {SITE_RIF}
+        </p>
+        <nav
+          className="flex flex-1 flex-wrap justify-center gap-x-6 gap-y-2 md:justify-end"
+          aria-label="Redes sociales"
+        >
+          <a className="font-body text-[10px] text-paper uppercase transition-colors hover:text-yellow" href="https://www.instagram.com/takariwa.studio" target="_blank" rel="noopener noreferrer">Instagram</a>
+          <a className="font-body text-[10px] text-paper uppercase transition-colors hover:text-yellow" href="https://www.linkedin.com/company/takariwa-studio/" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+          <a className="font-body text-[10px] text-paper uppercase transition-colors hover:text-yellow" href="https://www.facebook.com/takariwa.studio" target="_blank" rel="noopener noreferrer">Facebook</a>
+          <a className="font-body text-[10px] text-paper uppercase transition-colors hover:text-yellow" href="https://wa.me/584226340416" target="_blank" rel="noopener noreferrer">WhatsApp</a>
+        </nav>
       </div>
     </footer>
   );

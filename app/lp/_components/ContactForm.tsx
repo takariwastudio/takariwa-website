@@ -21,6 +21,7 @@ export default function ContactForm() {
       email: formData.get("email")?.toString() ?? "",
       mensaje: formData.get("mensaje")?.toString() ?? "",
       aceptaPolitica: formData.get("aceptaPolitica") === "on",
+      website: formData.get("website")?.toString() ?? "",
     };
 
     setStatus("submitting");
@@ -106,6 +107,18 @@ export default function ContactForm() {
         disabled={status === "submitting"}
         className="h-[63px] w-full resize-none border border-ink bg-paper px-2 py-1 font-body text-[10px] text-ink outline-none focus:border-2"
       />
+
+      {/* Honeypot anti-spam — oculto visualmente, bots lo rellenan */}
+      <div className="absolute -left-[9999px] h-0 overflow-hidden" aria-hidden="true">
+        <label htmlFor="website">Website</label>
+        <input
+          id="website"
+          name="website"
+          type="text"
+          tabIndex={-1}
+          autoComplete="off"
+        />
+      </div>
 
       <p className="mt-2 font-body text-[10px] text-ink uppercase">
         *Normalmente respondemos en 1 o 2 días hábiles
