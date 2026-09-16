@@ -343,3 +343,30 @@ export async function deleteProjectImage(
 
   return { ok: true };
 }
+
+export async function reorderProjects(
+  orderedIds: string[],
+): Promise<ActionResult> {
+  const supabase = createServerSupabase();
+
+  const updates = orderedIds.map((id, index) =>
+    supabase
+      .from("projects")
+      .update({ position: index + 1 })
+      .eq("id", id),
+  );
+
+  const results = await Promise.all(updates);
+  const failed = results.find((r) => r.error);
+
+  if (failed?.error) {
+    console.error("Error reordenando proyectos:", failed.error);
+    return { ok: false, error: "No se pudo guardar el orden." };
+  }
+
+  revalidatePath("/admin/trabajos");
+  revalidatePath("/");
+  revalidatePath("/trabajos");
+
+  return { ok: true };
+}

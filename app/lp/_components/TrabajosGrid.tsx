@@ -31,8 +31,10 @@ export default function TrabajosGrid({
 
   const visibleProjects =
     activeFilter === "general"
-      ? projects.slice(-7)
-      : projects.filter((project) => project.category === activeFilter);
+      ? projects.slice(0, 7)
+      : projects
+          .filter((project) => project.category === activeFilter)
+          .slice(0, 7);
 
   return (
     <>

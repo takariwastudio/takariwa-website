@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { createServerSupabase } from "@/lib/supabase/server";
 import { CreateProjectForm } from "./CreateProjectForm";
 import { DeleteProjectButton } from "./DeleteProjectButton";
+import { ProjectsList } from "./ProjectsList";
 
 export const metadata: Metadata = {
   title: "Trabajos | Admin",
@@ -16,14 +16,15 @@ type ProjectRow = {
   tag: string;
   category: string;
   hero_image_url: string;
+  position: number;
 };
 
 export default async function AdminTrabajosPage() {
   const supabase = createServerSupabase();
   const { data: projects, error } = await supabase
     .from("projects")
-    .select("id, slug, title, tag, category, hero_image_url")
-    .order("created_at", { ascending: true })
+    .select("id, slug, title, tag, category, hero_image_url, position")
+    .order("position", { ascending: true })
     .returns<ProjectRow[]>();
 
   if (error) {
@@ -40,49 +41,12 @@ export default async function AdminTrabajosPage() {
       </h1>
       <p className="mb-6 font-body text-sm text-muted-foreground md:mb-8">
         Los proyectos que crees acá aparecen en &quot;Nuestro trabajo&quot; del
-        homepage y en /trabajos. Las imágenes de galería se agregan editando el
-        proyecto ya creado.
+        homepage y en /trabajos. Arrastra para reordenar.
       </p>
 
       <CreateProjectForm />
 
-      <div className="mt-6 flex flex-col gap-3">
-        {(projects ?? []).map((project) => (
-          <div
-            key={project.id}
-            className="flex items-center justify-between gap-4 rounded-xl border border-border bg-card p-4"
-          >
-            <Link
-              href={`/admin/trabajos/${project.id}`}
-              className="flex min-w-0 flex-1 items-center gap-4"
-            >
-              <Image
-                src={project.hero_image_url}
-                alt={project.title}
-                width={96}
-                height={56}
-                className="h-14 w-24 shrink-0 rounded bg-background object-cover"
-              />
-              <div className="min-w-0">
-                <p className="truncate font-body text-sm font-semibold text-foreground">
-                  {project.title}
-                </p>
-                <p className="truncate font-body text-xs text-muted-foreground">
-                  {project.category} · {project.tag}
-                </p>
-              </div>
-            </Link>
-
-            <DeleteProjectButton id={project.id} title={project.title} />
-          </div>
-        ))}
-
-        {(projects ?? []).length === 0 && (
-          <p className="font-body text-sm text-muted-foreground">
-            Todavía no hay proyectos creados.
-          </p>
-        )}
-      </div>
+      <ProjectsList projects={projects ?? []} />
     </div>
   );
 }

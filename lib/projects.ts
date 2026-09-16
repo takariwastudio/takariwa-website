@@ -1,4 +1,3 @@
-import { cache } from "react";
 import { createBrowserSupabase } from "@/lib/supabase/client";
 
 export type ProjectCategory = "diseño" | "desarrollo" | "audiovisual";
@@ -11,6 +10,7 @@ export type ProjectSummary = {
   tag: string;
   category: ProjectCategory;
   hero_image_url: string;
+  position: number;
 };
 
 export type ProjectDetail = ProjectSummary & {
@@ -21,15 +21,6 @@ export type ProjectDetail = ProjectSummary & {
   images: string[];
 };
 
-// Solo para el título que va arriba de la lista de servicios en el
-// detalle ("Diseño", "Desarrollo"...) — el contenido de la lista en sí ya
-// no depende de la categoría, lo carga el admin por proyecto.
-export const CATEGORY_LABELS: Record<ProjectCategory, string> = {
-  diseño: "Diseño",
-  desarrollo: "Desarrollo",
-  audiovisual: "Audiovisual",
-};
-
 export const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "general", label: "General" },
   { key: "diseño", label: "Diseño" },
@@ -37,15 +28,24 @@ export const FILTERS: { key: FilterKey; label: string }[] = [
   { key: "audiovisual", label: "Audiovisuales" },
 ];
 
-// Lectura pública (anon key) — con React cache para deduplicar fetches
-// en un mismo render (ej: layout + page piden lo mismo). El admin invalida
-// con revalidatePath("/trabajos") tras mutaciones.
-export const getProjects = cache(async (): Promise<ProjectSummary[]> => {
+export const CATEGORY_LABELS: Record<ProjectCategory, string> = {
+  diseño: "Diseño",
+  desarrollo: "Desarrollo",
+  audiovisual: "Audiovisual",
+};
+
+export const CATEGORY_COLORS: Record<ProjectCategory, string> = {
+  diseño: "var(--color-magenta)",
+  desarrollo: "var(--color-orange)",
+  audiovisual: "var(--color-purple)",
+};
+
+export async function getProjects(): Promise<ProjectSummary[]> {
   const supabase = createBrowserSupabase();
   const { data, error } = await supabase
     .from("projects")
-    .select("id, slug, title, tag, category, hero_image_url")
-    .order("created_at", { ascending: true });
+    .select("id, slug, title, tag, category, hero_image_url, position")
+    .order("position", { ascending: true });
 
   if (error) {
     console.error("Error obteniendo proyectos:", error);
@@ -53,17 +53,17 @@ export const getProjects = cache(async (): Promise<ProjectSummary[]> => {
   }
 
   return (data ?? []) as ProjectSummary[];
-});
+}
 
-export const getProjectBySlug = cache(async (
+export async function getProjectBySlug(
   slug: string,
-): Promise<ProjectDetail | null> => {
+): Promise<ProjectDetail | null> {
   const supabase = createBrowserSupabase();
 
   const { data: project, error } = await supabase
     .from("projects")
     .select(
-      "id, slug, title, tag, category, hero_image_url, paragraph_1, paragraph_2, services, video_urls",
+      "id, slug, title, tag, category, hero_image_url, paragraph_1, paragraph_2, services, video_urls, position",
     )
     .eq("slug", slug)
     .single();
@@ -77,7 +77,7 @@ export const getProjectBySlug = cache(async (
     .from("project_images")
     .select("image_url")
     .eq("project_id", project.id)
-    .order("created_at", { ascending: true });
+    .order("position", { ascending: true });
 
   if (imagesError) {
     console.error("Error obteniendo imágenes del proyecto:", imagesError);
@@ -87,10 +87,4 @@ export const getProjectBySlug = cache(async (
     ...(project as unknown as ProjectDetail),
     images: (images ?? []).map((row) => row.image_url as string),
   };
-});
-
-export const CATEGORY_COLORS: Record<ProjectCategory, string> = {
-  diseño: "var(--color-magenta)",
-  desarrollo: "var(--color-orange)",
-  audiovisual: "var(--color-purple)",
-};
+}
