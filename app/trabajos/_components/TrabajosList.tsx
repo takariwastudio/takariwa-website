@@ -45,12 +45,12 @@ export default function TrabajosList({
         ))}
       </nav>
 
-      <div className="mt-8 columns-1 gap-4 sm:columns-2 md:mt-10 md:columns-3 md:gap-6">
+      <div className="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 md:mt-10 md:grid-cols-4 md:gap-6">
         {visibleProjects.map((project) => (
           <Link
             key={project.id}
             href={`/trabajos/${project.slug}`}
-            className="group relative mb-4 block aspect-[4/3] w-full break-inside-avoid overflow-hidden bg-paper transition-opacity hover:opacity-90 md:mb-6"
+            className="group relative block aspect-[4/3] w-full overflow-hidden bg-paper transition-opacity hover:opacity-90"
           >
             <Image
               src={project.hero_image_url}

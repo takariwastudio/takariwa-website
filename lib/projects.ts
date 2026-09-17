@@ -77,7 +77,7 @@ export async function getProjectBySlug(
     .from("project_images")
     .select("image_url")
     .eq("project_id", project.id)
-    .order("position", { ascending: true });
+    .order("created_at", { ascending: true });
 
   if (imagesError) {
     console.error("Error obteniendo imágenes del proyecto:", imagesError);
