@@ -6,42 +6,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = [
-    { url: base, lastModified: now, changeFrequency: "weekly", priority: 1 },
     {
-      url: `${base}/lp`,
+      url: base,
       lastModified: now,
       changeFrequency: "weekly",
-      priority: 0.9,
+      priority: 1,
     },
     {
       url: `${base}/trabajos`,
       lastModified: now,
       changeFrequency: "weekly",
       priority: 0.9,
-    },
-    {
-      url: `${base}/briefs/web_brief`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${base}/briefs/design_brief`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${base}/briefs/social_brief`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${base}/briefs/audiovisual_brief`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.7,
     },
   ];
 
@@ -50,15 +25,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const { data } = await supabase
       .from("projects")
       .select("slug, created_at")
-      .order("created_at", { ascending: false });
+      .order("position", { ascending: true });
 
-    const projectRoutes: MetadataRoute.Sitemap =
-      (data ?? []).map((p) => ({
-        url: `${base}/trabajos/${p.slug}`,
-        lastModified: p.created_at ? new Date(p.created_at) : now,
-        changeFrequency: "weekly" as const,
-        priority: 0.8,
-      }));
+    const projectRoutes: MetadataRoute.Sitemap = (data ?? []).map((p) => ({
+      url: `${base}/trabajos/${p.slug}`,
+      lastModified: p.created_at ? new Date(p.created_at) : now,
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    }));
 
     return [...staticRoutes, ...projectRoutes];
   } catch {
