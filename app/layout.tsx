@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bebas_Neue, Jost, Bai_Jamjuree } from "next/font/google";
 import "./globals.css";
+import Script from "next/script";
 
 const bebasNeue = Bebas_Neue({
   weight: "400",
@@ -105,6 +106,18 @@ export default function RootLayout({
       <body
         className={`${bebasNeue.variable} ${jost.variable} ${baiJamjuree.variable} font-body bg-ink text-paper min-h-dvh overflow-x-hidden`}
       >
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-47ZBFYQNJH"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-47ZBFYQNJH');
+  `}
+        </Script>
         {children}
         <script
           type="application/ld+json"
