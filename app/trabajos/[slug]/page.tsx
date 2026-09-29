@@ -23,9 +23,13 @@ export async function generateMetadata({
     return { title: "Proyecto no encontrado" };
   }
 
-  const description =
+  const rawDescription =
     project.paragraph_1 ||
     `${project.tag} — ${project.title} por Takariwa Studio.`;
+  const description =
+    rawDescription.length > 155
+      ? rawDescription.slice(0, 152) + "..."
+      : rawDescription;
 
   return {
     title: project.title,
@@ -34,6 +38,7 @@ export async function generateMetadata({
       title: `${project.title} | Takariwa Studio`,
       description,
       url: `https://takariwa.studio/trabajos/${project.slug}`,
+      siteName: "Takariwa Studio",
       images: [
         {
           url: project.hero_image_url,
