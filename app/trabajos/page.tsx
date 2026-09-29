@@ -2,6 +2,19 @@ import { getProjects } from "@/lib/projects";
 import SiteFooter from "../_components/SiteFooter";
 import SiteNav from "../_components/SiteNav";
 import TrabajosList from "./_components/TrabajosList";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Trabajos",
+  description:
+    "Todos los proyectos de Takariwa Studio, branding, desarrollo web y producción audiovisual desde Maracay para donde sea necesario.",
+  openGraph: {
+    title: "Trabajos | Takariwa Studio",
+    description:
+      "Todos los proyectos de Takariwa Studio, branding, desarrollo web y producción audiovisual desde Maracay para donde sea necesario.",
+    url: "https://takariwa.studio/trabajos",
+  },
+};
 
 export const dynamic = "force-dynamic";
 

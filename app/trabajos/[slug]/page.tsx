@@ -9,6 +9,48 @@ import {
 import { toVideoEmbed } from "@/lib/video-embed";
 import SiteFooter from "../../_components/SiteFooter";
 import SiteNav from "../../_components/SiteNav";
+import type { Metadata } from "next";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await getProjectBySlug(slug);
+
+  if (!project) {
+    return { title: "Proyecto no encontrado" };
+  }
+
+  const description =
+    project.paragraph_1 ||
+    `${project.tag} — ${project.title} por Takariwa Studio.`;
+
+  return {
+    title: project.title,
+    description,
+    openGraph: {
+      title: `${project.title} | Takariwa Studio`,
+      description,
+      url: `https://takariwa.studio/trabajos/${project.slug}`,
+      images: [
+        {
+          url: project.hero_image_url,
+          width: 1600,
+          height: 832,
+          alt: project.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${project.title} | Takariwa Studio`,
+      description,
+      images: [project.hero_image_url],
+    },
+  };
+}
 
 export const dynamic = "force-dynamic";
 
