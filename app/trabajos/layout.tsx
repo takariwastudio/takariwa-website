@@ -10,14 +10,6 @@ const baiJamjuree = Bai_Jamjuree({
 
 export const metadata: Metadata = {
   title: "Trabajos | Takariwa Studio",
-  robots: {
-    index: false,
-    follow: false,
-    googleBot: {
-      index: false,
-      follow: false,
-    },
-  },
 };
 
 export default function TrabajosLayout({
